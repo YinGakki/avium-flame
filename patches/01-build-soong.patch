@@ -1,0 +1,84 @@
+From 099677cfedd8bf9e16dcf251a3a96dba4526a712 Mon Sep 17 00:00:00 2001
+From: builder <b@x>
+Date: Mon, 23 Nov 2026 18:19:20 +0800
+Subject: [PATCH 1/2] pass GOGC/GOMEMLIMIT to soong_build env (ninjaEnv only
+ had TOP/PATH)
+
+Change-Id: Id7e227b13ae26bdc86c1a31de02dc90c0fb98b23
+---
+ ui/build/soong.go | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/ui/build/soong.go b/ui/build/soong.go
+index c9b303c5b..bae770726 100644
+--- a/ui/build/soong.go
++++ b/ui/build/soong.go
+@@ -698,6 +698,14 @@ func runSoong(ctx Context, config Config, enforceNoSoongOutput bool) {
+ 			SetupLitePath(ctx, config, "")
+ 			ninjaPath, _ := config.Environment().Get("PATH")
+ 			ninjaEnv.Set("PATH", ninjaPath)
++		// Pass Go memory tuning to soong_build so full analysis does not
++		// exhaust physical memory and thrash (flame build, 2026-11-23)
++		if gogc, ok := config.Environment().Get("GOGC"); ok {
++			ninjaEnv.Set("GOGC", gogc)
++		}
++		if memlimit, ok := config.Environment().Get("GOMEMLIMIT"); ok {
++			ninjaEnv.Set("GOMEMLIMIT", memlimit)
++		}
+ 
+ 			cmd.Environment = &ninjaEnv
+ 			cmd.Sandbox = soongSandbox
+-- 
+2.43.0
+
+
+From 78c53b1a71390e9ebfd7ec62fcd98b321fb73602 Mon Sep 17 00:00:00 2001
+From: builder <b@x>
+Date: Mon, 23 Nov 2026 19:48:51 +0800
+Subject: [PATCH 2/2] fix: pass GOGC/GOMEMLIMIT into soong_build via
+ invocationEnv (was lost to env -i)
+
+Change-Id: Id40bd9590d153fba63f8bb241841c1cc03473e09
+---
+ ui/build/soong.go | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
+
+diff --git a/ui/build/soong.go b/ui/build/soong.go
+index bae770726..2f4f56fd6 100644
+--- a/ui/build/soong.go
++++ b/ui/build/soong.go
+@@ -239,7 +239,15 @@ func (pb PrimaryBuilderFactory) primaryBuilderInvocation(config Config) bootstra
+ 		// sometimes by an order of magnitude depending on luck.
+ 		// The original reason for adding async preemption to Go is here:
+ 		// https://github.com/golang/proposal/blob/master/design/24543-non-cooperative-preemption.md
+-		invocationEnv["GODEBUG"] = "asyncpreemptoff=1"
++
++	}
++	// Pass Go memory tuning into soong_build (flame build: full soong analysis
++	// needs >17GB and would thrash swap on a 23GB host; 2026-11-23)
++	if gogc := os.Getenv("GOGC"); gogc != "" {
++		invocationEnv["GOGC"] = gogc
++	}
++	if memlimit := os.Getenv("GOMEMLIMIT"); memlimit != "" {
++		invocationEnv["GOMEMLIMIT"] = memlimit
+ 	}
+ 
+ 	var allArgs []string
+@@ -698,14 +706,6 @@ func runSoong(ctx Context, config Config, enforceNoSoongOutput bool) {
+ 			SetupLitePath(ctx, config, "")
+ 			ninjaPath, _ := config.Environment().Get("PATH")
+ 			ninjaEnv.Set("PATH", ninjaPath)
+-		// Pass Go memory tuning to soong_build so full analysis does not
+-		// exhaust physical memory and thrash (flame build, 2026-11-23)
+-		if gogc, ok := config.Environment().Get("GOGC"); ok {
+-			ninjaEnv.Set("GOGC", gogc)
+-		}
+-		if memlimit, ok := config.Environment().Get("GOMEMLIMIT"); ok {
+-			ninjaEnv.Set("GOMEMLIMIT", memlimit)
+-		}
+ 
+ 			cmd.Environment = &ninjaEnv
+ 			cmd.Sandbox = soongSandbox
+-- 
+2.43.0
+

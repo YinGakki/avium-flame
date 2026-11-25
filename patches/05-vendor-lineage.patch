@@ -1,0 +1,36 @@
+From 26ffc80013ff1df72a60cd79e314236a1cea6192 Mon Sep 17 00:00:00 2001
+From: builder <b@x>
+Date: Tue, 24 Nov 2026 03:41:37 +0800
+Subject: [PATCH] trim: drop ThemePicker+Seedvault to fit super (flame)
+
+Change-Id: I7fd46a21a8f56ac19264e35fff0cfcc2725a86f6
+---
+ config/common_mobile.mk      | 1 -
+ config/common_mobile_full.mk | 1 -
+ 2 files changed, 2 deletions(-)
+
+diff --git a/config/common_mobile.mk b/config/common_mobile.mk
+index d81f613e..e7e4c276 100644
+--- a/config/common_mobile.mk
++++ b/config/common_mobile.mk
+@@ -82,5 +82,4 @@ PRODUCT_ARTIFACT_PATH_REQUIREMENT_ALLOWED_LIST += \
+ # Themes
+ PRODUCT_PACKAGES += \
+     LineageBlackTheme \
+-    ThemePicker \
+     ThemesStub
+diff --git a/config/common_mobile_full.mk b/config/common_mobile_full.mk
+index 99eac0cc..6ed4faae 100644
+--- a/config/common_mobile_full.mk
++++ b/config/common_mobile_full.mk
+@@ -12,7 +12,6 @@ PRODUCT_PACKAGES += \
+     Etar \
+     Profiles \
+     Recorder \
+-    Seedvault \
+     Twelve
+ 
+ ifneq ($(PRODUCT_NO_CAMERA),true)
+-- 
+2.43.0
+
