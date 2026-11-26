@@ -27,7 +27,7 @@ git -C packages/apps/FeatureSettings am ../../patches/10-featuresettings.patch
 ```
 
 KernelSU 源码由 `manifest/local_manifests/pixel.xml` 拉取到 `kernel/google/msm-4.14/KernelSU`，分支为 `builtin-new`。
-Root 开关需要两个 boot 镜像。先用 `scripts/prepare-avium-boot-images.sh` 生成 `boot_ksu.img` 与 `boot_default.img`，脚本会把它们放入 `vendor/avium/prebuilt/common/etc/avium/boot/`，随后 `m bacon` 会自动打包进 `system_ext`。GitHub patch 不包含这两个二进制镜像。
+Root 开关需要两个 boot 镜像。先用 `scripts/prepare-avium-boot-images.sh` 生成 `boot_ksu.img` 与 `boot_default.img`，脚本会把它们放入 `vendor/avium/prebuilt/common/etc/avium/boot/`，并让 `floral_defconfig` 保持 KSU 关闭，因此主 ROM 的 `boot.img` 是干净默认 boot。随后 `m bacon` 会把两个 boot 镜像打包进 `system_ext`，Root 开关开启时再刷入 KSU boot。GitHub patch 不包含这两个二进制镜像。
 
 ## 三、编译
 ```bash

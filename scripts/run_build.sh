@@ -21,6 +21,10 @@ lunch lineage_flame-bp4a-userdebug >> $LOG 2>&1 || lunch lineage_flame-userdebug
 lrc=$?
 echo "lunch_rc=$lrc" >> $LOG
 [ $lrc -eq 0 ] || { echo 'LUNCH FAILED' >> $LOG; exit 1; }
+if [ -f scripts/prepare-avium-boot-images.sh ]; then
+  echo '--- prepare avium boot images ---' >> $LOG
+  bash scripts/prepare-avium-boot-images.sh >> $LOG 2>&1 || { echo 'BOOT IMAGE PREP FAILED' >> $LOG; exit 1; }
+fi
 echo '--- m bacon -j8 ---' >> $LOG
 m bacon -j8 >> $LOG 2>&1
 brc=$?

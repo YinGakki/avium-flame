@@ -15,6 +15,5 @@ echo '=== build default boot (KSU disabled) ==='
 sed -i 's/^CONFIG_KSU=y/# CONFIG_KSU is not set/; s/^CONFIG_KSU_TAMPER_SYSCALL_TABLE=y/# CONFIG_KSU_TAMPER_SYSCALL_TABLE is not set/' "$DEF"
 m bootimage -j8
 cp "$OUT" "$DST/boot_default.img"
-cp "$BAK" "$DEF"
-echo '=== boot images ready ==='
+echo '=== KSU disabled for main ROM; boot payload will be clean ==='
 ls -lh "$DST/boot_ksu.img" "$DST/boot_default.img"
