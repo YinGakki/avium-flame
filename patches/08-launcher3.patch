@@ -1,0 +1,55 @@
+From 5dcbc5dfe33ec81848eff9ba59c60717f5dd53ad Mon Sep 17 00:00:00 2001
+From: builder <b@x>
+Date: Wed, 25 Nov 2026 18:02:27 +0800
+Subject: [PATCH 1/2] launcher: use GESTURE_THRESHOLD_ACTIVATE haptic for
+ letter index (match back gesture)
+
+Change-Id: I02c1d9a0003fbbbe19287e0ed9d4c64fd3f0df0c
+---
+ src/org/avium/launcher/AppIndexController.java | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/src/org/avium/launcher/AppIndexController.java b/src/org/avium/launcher/AppIndexController.java
+index ff65c1deaf..edd52fa1bb 100644
+--- a/src/org/avium/launcher/AppIndexController.java
++++ b/src/org/avium/launcher/AppIndexController.java
+@@ -81,8 +81,10 @@ public class AppIndexController {
+     }
+ 
+     private void performHapticFeedback() {
+-        if (mVibrator != null && mVibrator.hasVibrator()) {
+-            mVibrator.vibrate(10);
++        // Match the system back-gesture haptic feedback (AviumUI)
++        if (mLauncher != null) {
++            mLauncher.performHapticFeedback(
++                    android.view.HapticFeedbackConstants.GESTURE_THRESHOLD_ACTIVATE);
+         }
+     }
+ 
+
+From b3210eb2bccc9d8123f7b04358f4ae39dc9a3d36 Mon Sep 17 00:00:00 2001
+From: builder <b@x>
+Date: Thu, 26 Nov 2026 00:30:39 +0800
+Subject: [PATCH 2/2] launcher: fix letter index haptic (use getDragLayer,
+ Activity lacks performHapticFeedback)
+
+Change-Id: Id6a56dc3d747162989cd7937a3b032670f836164
+---
+ src/org/avium/launcher/AppIndexController.java | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/org/avium/launcher/AppIndexController.java b/src/org/avium/launcher/AppIndexController.java
+index edd52fa1bb..ea2ac0abb8 100644
+--- a/src/org/avium/launcher/AppIndexController.java
++++ b/src/org/avium/launcher/AppIndexController.java
+@@ -82,8 +82,8 @@ public class AppIndexController {
+ 
+     private void performHapticFeedback() {
+         // Match the system back-gesture haptic feedback (AviumUI)
+-        if (mLauncher != null) {
+-            mLauncher.performHapticFeedback(
++        if (mLauncher != null && mLauncher.getDragLayer() != null) {
++            mLauncher.getDragLayer().performHapticFeedback(
+                     android.view.HapticFeedbackConstants.GESTURE_THRESHOLD_ACTIVATE);
+         }
+     }

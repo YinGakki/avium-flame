@@ -1,0 +1,195 @@
+From 33bb74245933d9d3bea537870b9dce8b46f5573e Mon Sep 17 00:00:00 2001
+From: builder <b@x>
+Date: Wed, 25 Nov 2026 20:39:59 +0800
+Subject: [PATCH 1/2] FeatureSettings: add Root + Pixel features (VoLTE/Photos)
+ toggle groups
+
+Change-Id: I973fe059999ad928dd288b6151a5fe3056024afc
+---
+ .../CategorySettingsFragment.kt               | 50 +++++++++++++++++++
+ app/src/main/res/values-zh-rCN/strings.xml    | 10 ++++
+ app/src/main/res/values/strings.xml           | 10 ++++
+ .../main/res/xml/feature_settings_system.xml  | 25 ++++++++++
+ 4 files changed, 95 insertions(+)
+
+diff --git a/app/src/main/java/org/exthm/featuresettings/CategorySettingsFragment.kt b/app/src/main/java/org/exthm/featuresettings/CategorySettingsFragment.kt
+index a87fb74..e7a35b5 100644
+--- a/app/src/main/java/org/exthm/featuresettings/CategorySettingsFragment.kt
++++ b/app/src/main/java/org/exthm/featuresettings/CategorySettingsFragment.kt
+@@ -77,6 +77,24 @@ class CategorySettingsFragment : SettingsBasePreferenceFragment() {
+         category.isVisible = category.preferenceCount > 0
+     }
+ 
++    private fun launchKsuManager() {
++        val ctx = requireContext()
++        val candidates = listOf(
++            "com.sukisu.ultra", "me.weishu.kernelsu", "com.sukisu.nova",
++            "io.github.sukisu", "com.sukisu.manager"
++        )
++        for (pkg in candidates) {
++            val intent = ctx.packageManager.getLaunchIntentForPackage(pkg)
++            if (intent != null) { startActivity(intent); return }
++        }
++        try {
++            startActivity(Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
++                android.net.Uri.parse("package:" + candidates.first())))
++        } catch (e: Exception) {
++            android.widget.Toast.makeText(ctx, "未找到 SukiSU Manager", android.widget.Toast.LENGTH_SHORT).show()
++        }
++    }
++
+     private fun getCategoryXml(category: SettingsCategory): Int {
+         return when (category) {
+             SettingsCategory.STATUS_BAR -> R.xml.feature_settings_ui
+@@ -211,6 +229,31 @@ class CategorySettingsFragment : SettingsBasePreferenceFragment() {
+      */
+     private fun bindSystemPreferences() {
+ 
++        // ===== Avium Root / Pixel features (added) =====
++        bindSwitch(KEY_AVIUM_ROOT_ENABLE, SystemPropertiesHelper.getBoolean(PROP_AVIUM_ROOT, false)) { enabled ->
++            SystemPropertiesHelper.set(PROP_AVIUM_ROOT, if (enabled) "1" else "0")
++            showRebootRequiredDialog()
++        }
++        findPreference<Preference>(KEY_AVIUM_ROOT_MANAGER)?.apply {
++            isPersistent = false
++            setOnPreferenceClickListener {
++                launchKsuManager()
++                true
++            }
++        }
++        bindSwitch(KEY_AVIUM_VOLTE_FIX, SystemPropertiesHelper.getBoolean(PROP_AVIUM_VOLTE, true)) { enabled ->
++            val v = if (enabled) "1" else "0"
++            SystemPropertiesHelper.set(PROP_AVIUM_VOLTE, v)
++            SystemPropertiesHelper.set("persist.dbg.ims_volte_enable", v)
++            SystemPropertiesHelper.set("persist.dbg.volte_avail_ovr", v)
++            SystemPropertiesHelper.set("persist.dbg.vt_avail_ovr", v)
++            SystemPropertiesHelper.set("persist.dbg.wfc_avail_ovr", v)
++        }
++        bindSwitch(KEY_AVIUM_GPHOTOS, SystemPropertiesHelper.getBoolean(PROP_AVIUM_GPHOTOS, false)) { enabled ->
++            SystemPropertiesHelper.set(PROP_AVIUM_GPHOTOS, if (enabled) "1" else "0")
++        }
++        // ===== end added =====
++
+         bindSwitch(
+             KEY_FORCE_6GHZ_HOTSPOT,
+             SystemPropertiesHelper.getBoolean(FORCE_6GHZ_HOTSPOT_PROPERTY, false)
+@@ -697,6 +740,13 @@ class CategorySettingsFragment : SettingsBasePreferenceFragment() {
+         private const val KEY_GMS_ENABLED = "gms_enabled"
+ 
+         private const val KEY_TEE_SOFT_DEBUG = "tee_soft_debug"
++        private const val PROP_AVIUM_ROOT = "persist.avium.root"
++        private const val PROP_AVIUM_VOLTE = "persist.avium.volte"
++        private const val PROP_AVIUM_GPHOTOS = "persist.avium.gphotos"
++        private const val KEY_AVIUM_ROOT_ENABLE = "avium_root_enable"
++        private const val KEY_AVIUM_ROOT_MANAGER = "avium_root_manager"
++        private const val KEY_AVIUM_VOLTE_FIX = "avium_volte_fix"
++        private const val KEY_AVIUM_GPHOTOS = "avium_gphotos_unlimited"
+ 
+         fun newInstance(categoryId: String): CategorySettingsFragment {
+             return CategorySettingsFragment().apply {
+diff --git a/app/src/main/res/values-zh-rCN/strings.xml b/app/src/main/res/values-zh-rCN/strings.xml
+index d2029c7..2ee046f 100644
+--- a/app/src/main/res/values-zh-rCN/strings.xml
++++ b/app/src/main/res/values-zh-rCN/strings.xml
+@@ -114,4 +114,14 @@
+     <string name="profile_ime_summary">在此空间使用主空间选中的输入法，输入法可以处理此处输入的内容。下次点击输入框时生效；关闭后恢复该空间自己的输入法。</string>
+     <string name="profile_ime_clone">应用分身</string>
+     <string name="profile_ime_private">隐私空间</string>
++    <string name="system_group_root">Root</string>
++    <string name="avium_root_enable_title">启用 Root 权限</string>
++    <string name="avium_root_enable_summary">通过 KernelSU 授予 root，重启后生效</string>
++    <string name="avium_root_manager_title">Root 授权管理</string>
++    <string name="avium_root_manager_summary">打开 SukiSU Manager 为应用授权</string>
++    <string name="system_group_pixel_features">Pixel 特色功能</string>
++    <string name="avium_volte_fix_title">国内运营商 VoLTE 修复</string>
++    <string name="avium_volte_fix_summary">为移动 / 联通 / 电信启用 VoLTE</string>
++    <string name="avium_gphotos_unlimited_title">Google 相册无限空间</string>
++    <string name="avium_gphotos_unlimited_summary">伪装为 Pixel 1 获得无限原画质上传（需 Root）</string>
+ </resources>
+diff --git a/app/src/main/res/values/strings.xml b/app/src/main/res/values/strings.xml
+index 41ccfe8..988be5b 100644
+--- a/app/src/main/res/values/strings.xml
++++ b/app/src/main/res/values/strings.xml
+@@ -128,4 +128,14 @@
+     <string name="profile_ime_summary">Use the main space’s selected keyboard in this space. The keyboard can process text entered here. Applies when you next focus a text field; turn off to restore the space’s own keyboard.</string>
+     <string name="profile_ime_clone">Cloned apps</string>
+     <string name="profile_ime_private">Private space</string>
++    <string name="system_group_root">Root</string>
++    <string name="avium_root_enable_title">Enable root access</string>
++    <string name="avium_root_enable_summary">Grant root via KernelSU. Takes effect after reboot.</string>
++    <string name="avium_root_manager_title">Root authorization</string>
++    <string name="avium_root_manager_summary">Open SukiSU Manager to authorize apps</string>
++    <string name="system_group_pixel_features">Pixel features</string>
++    <string name="avium_volte_fix_title">VoLTE for China carriers</string>
++    <string name="avium_volte_fix_summary">Enable VoLTE for China Mobile / Unicom / Telecom</string>
++    <string name="avium_gphotos_unlimited_title">Google Photos unlimited</string>
++    <string name="avium_gphotos_unlimited_summary">Spoof device as Pixel 1 for unlimited original-quality uploads (requires root)</string>
+ </resources>
+diff --git a/app/src/main/res/xml/feature_settings_system.xml b/app/src/main/res/xml/feature_settings_system.xml
+index 4aa878f..6e35fe2 100644
+--- a/app/src/main/res/xml/feature_settings_system.xml
++++ b/app/src/main/res/xml/feature_settings_system.xml
+@@ -18,6 +18,31 @@
+     xmlns:settings="http://schemas.android.com/apk/res-auto"
+     android:title="@string/category_system">
+ 
++    <PreferenceCategory android:title="@string/system_group_root">
++        <SwitchPreferenceCompat
++            android:key="avium_root_enable"
++            android:title="@string/avium_root_enable_title"
++            android:summary="@string/avium_root_enable_summary"
++            android:defaultValue="false" />
++        <Preference
++            android:key="avium_root_manager"
++            android:title="@string/avium_root_manager_title"
++            android:summary="@string/avium_root_manager_summary" />
++    </PreferenceCategory>
++
++    <PreferenceCategory android:title="@string/system_group_pixel_features">
++        <SwitchPreferenceCompat
++            android:key="avium_volte_fix"
++            android:title="@string/avium_volte_fix_title"
++            android:summary="@string/avium_volte_fix_summary"
++            android:defaultValue="true" />
++        <SwitchPreferenceCompat
++            android:key="avium_gphotos_unlimited"
++            android:title="@string/avium_gphotos_unlimited_title"
++            android:summary="@string/avium_gphotos_unlimited_summary"
++            android:defaultValue="false" />
++    </PreferenceCategory>
++
+     <PreferenceCategory android:title="@string/system_group_spoof">
+         <SwitchPreferenceCompat
+             android:key="fake_bl_unlock"
+
+From b71d870e830ece3e910a7c623e139e4a2725a27d Mon Sep 17 00:00:00 2001
+From: builder <b@x>
+Date: Thu, 26 Nov 2026 16:04:50 +0800
+Subject: [PATCH 2/2] FeatureSettings: force root switch trigger on every
+ toggle
+
+Change-Id: Iad9f5597cb266625b53e96eae70f3f5960973048
+---
+ .../java/org/exthm/featuresettings/CategorySettingsFragment.kt  | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/app/src/main/java/org/exthm/featuresettings/CategorySettingsFragment.kt b/app/src/main/java/org/exthm/featuresettings/CategorySettingsFragment.kt
+index e7a35b5..4b729f4 100644
+--- a/app/src/main/java/org/exthm/featuresettings/CategorySettingsFragment.kt
++++ b/app/src/main/java/org/exthm/featuresettings/CategorySettingsFragment.kt
+@@ -232,6 +232,7 @@ class CategorySettingsFragment : SettingsBasePreferenceFragment() {
+         // ===== Avium Root / Pixel features (added) =====
+         bindSwitch(KEY_AVIUM_ROOT_ENABLE, SystemPropertiesHelper.getBoolean(PROP_AVIUM_ROOT, false)) { enabled ->
+             SystemPropertiesHelper.set(PROP_AVIUM_ROOT, if (enabled) "1" else "0")
++            SystemPropertiesHelper.set(PROP_AVIUM_ROOT_TRIGGER, System.currentTimeMillis().toString())
+             showRebootRequiredDialog()
+         }
+         findPreference<Preference>(KEY_AVIUM_ROOT_MANAGER)?.apply {
+@@ -741,6 +742,7 @@ class CategorySettingsFragment : SettingsBasePreferenceFragment() {
+ 
+         private const val KEY_TEE_SOFT_DEBUG = "tee_soft_debug"
+         private const val PROP_AVIUM_ROOT = "persist.avium.root"
++        private const val PROP_AVIUM_ROOT_TRIGGER = "avium.root.trigger"
+         private const val PROP_AVIUM_VOLTE = "persist.avium.volte"
+         private const val PROP_AVIUM_GPHOTOS = "persist.avium.gphotos"
+         private const val KEY_AVIUM_ROOT_ENABLE = "avium_root_enable"

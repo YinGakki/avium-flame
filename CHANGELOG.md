@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## v2 recipe — 2026-11-26
+第二版源码配方。ROM 产物仍不写入 GitHub 仓库。
+
+- **功能**：KernelSU builtin-new root boot switch; China VoLTE MBN; 绝招 Root/Pixel 分组; 自动录音开关; Launcher 字母索引震动对齐返回; Dialer 自动录音开关。
+- **GMS 调整**：保留 FilesPrebuilt；移除 Maps/MapsDynamite/Gmail/Scribe/Calendar。
+- **Root 开关**：两个 boot 镜像随 ROM 打包到 `system_ext/etc/avium/boot/`，不再需要 recovery 阶段额外复制；开关通过 runtime trigger 强制刷新 boot 分区。
+- **patch**：新增 06-kernel-ksu、07-vendor-avium、08-launcher3、09-dialer、10-featuresettings；更新 02/03。
+- **manifest**：新增 SukiSU `builtin-new` 源码仓库。
+
+
 ## v1.0 — 2026-11-24
 首个可正常刷入并使用的版本。
 

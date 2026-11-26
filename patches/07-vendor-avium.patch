@@ -1,0 +1,219 @@
+From 8e157643fd96d0a6586a8fbb223675e9d2c82351 Mon Sep 17 00:00:00 2001
+From: builder <b@x>
+Date: Wed, 25 Nov 2026 21:17:35 +0800
+Subject: [PATCH 1/5] avium: add aviumctl root boot-switch (init service +
+ sepolicy)
+
+Change-Id: I2bea4107878002a4259563fc8432c1476a06f4de
+---
+ config/avium.mk                          |  3 ++-
+ prebuilt/common/bin/avium-root-switch.sh | 20 ++++++++++++++++++++
+ prebuilt/common/etc/init/init.avium.rc   |  7 ++++++-
+ sepolicy/common/private/init.te          |  9 ++++++++-
+ 4 files changed, 36 insertions(+), 3 deletions(-)
+ create mode 100644 prebuilt/common/bin/avium-root-switch.sh
+
+diff --git a/config/avium.mk b/config/avium.mk
+index f6eef74..2473474 100644
+--- a/config/avium.mk
++++ b/config/avium.mk
+@@ -63,4 +63,5 @@ $(call inherit-product, vendor/avium/config/prop.mk)
+ 
+ # AviumUI init
+ PRODUCT_COPY_FILES += \
+-     vendor/avium/prebuilt/common/etc/init/init.avium.rc:$(TARGET_COPY_OUT_SYSTEM_EXT)/etc/init/init.avium.rc
++     vendor/avium/prebuilt/common/etc/init/init.avium.rc:$(TARGET_COPY_OUT_SYSTEM_EXT)/etc/init/init.avium.rc \
++     vendor/avium/prebuilt/common/bin/avium-root-switch.sh:$(TARGET_COPY_OUT_SYSTEM_EXT)/bin/avium-root-switch.sh
+diff --git a/prebuilt/common/bin/avium-root-switch.sh b/prebuilt/common/bin/avium-root-switch.sh
+new file mode 100644
+index 0000000..a1d8a8b
+--- /dev/null
++++ b/prebuilt/common/bin/avium-root-switch.sh
+@@ -0,0 +1,20 @@
++#!/system/bin/sh
++# AviumUI root switch: flash selected boot image to current slot boot partition.
++# Triggered by init on property change of persist.avium.root (1=ksu, 0=default).
++LOG=/data/system/avium/root-switch.log
++mkdir -p /data/system/avium 2>/dev/null
++exec >>"$LOG" 2>&1
++echo "=== $(date) root-switch triggered ==="
++VAL=$(getprop persist.avium.root)
++SLOT=$(getprop ro.boot.slot_suffix)
++[ -z "$SLOT" ] && SLOT="_a"
++echo "persist.avium.root=$VAL slot=$SLOT"
++if [ "$VAL" = "1" ]; then IMG=/sdcard/avium/boot_ksu.img; else IMG=/sdcard/avium/boot_default.img; fi
++echo "target image: $IMG"
++if [ ! -f "$IMG" ]; then echo "MISSING $IMG, abort"; exit 1; fi
++BLK=/dev/block/bootdevice/by-name/boot${SLOT}
++[ -e "$BLK" ] || BLK=/dev/block/by-name/boot${SLOT}
++echo "flashing $IMG -> $BLK"
++dd if="$IMG" of="$BLK" bs=4096 2>&1
++sync
++echo "done rc=$?"
+diff --git a/prebuilt/common/etc/init/init.avium.rc b/prebuilt/common/etc/init/init.avium.rc
+index 013e3d4..1d04fb2 100644
+--- a/prebuilt/common/etc/init/init.avium.rc
++++ b/prebuilt/common/etc/init/init.avium.rc
+@@ -13,4 +13,9 @@ on property:persist.avium.depthwallpaper=0
+     copy /system_ext/media/wallpaper/mask /data/system/avium/mask
+     copy /system_ext/media/wallpaper/wallpaper /data/system/avium/wallpaper
+     chmod 0777 /data/system/avium/mask
+-    chmod 0777 /data/system/avium/wallpaper
+\ No newline at end of file
++    chmod 0777 /data/system/avium/wallpaper
++
++on property:persist.avium.root=1
++    exec - root -- /system/bin/sh /system_ext/bin/avium-root-switch.sh
++on property:persist.avium.root=0
++    exec - root -- /system/bin/sh /system_ext/bin/avium-root-switch.sh
+diff --git a/sepolicy/common/private/init.te b/sepolicy/common/private/init.te
+index 3a64af2..ac29491 100644
+--- a/sepolicy/common/private/init.te
++++ b/sepolicy/common/private/init.te
+@@ -1,2 +1,9 @@
+ allow init avium_metadata_file:dir { read write add_name remove_name search open };
+-allow init avium_metadata_file:file { read write open create getattr setattr unlink };
+\ No newline at end of file
++allow init avium_metadata_file:file { read write open create getattr setattr unlink };
++
++# AviumUI root switch: dd boot image to boot partition (aviumctl)
++allow init media_rw_data_file:dir { search open read getattr };
++allow init media_rw_data_file:file { open read getattr };
++allow init boot_block_device:blk_file { open write getattr };
++allow init system_data_file:dir { search open read write add_name create getattr };
++allow init system_data_file:file { open read write create getattr };
+
+From 096e6dac1ba2e8b0f8793c66e3ccd74e7a7e7e10 Mon Sep 17 00:00:00 2001
+From: builder <b@x>
+Date: Wed, 25 Nov 2026 21:44:27 +0800
+Subject: [PATCH 2/5] avium: aviumctl switch reads boot images from /data/avium
+
+Change-Id: I2032feed3279acc1525010418b553b8d0233c95f
+---
+ prebuilt/common/bin/avium-root-switch.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/prebuilt/common/bin/avium-root-switch.sh b/prebuilt/common/bin/avium-root-switch.sh
+index a1d8a8b..a4600c1 100644
+--- a/prebuilt/common/bin/avium-root-switch.sh
++++ b/prebuilt/common/bin/avium-root-switch.sh
+@@ -9,7 +9,7 @@ VAL=$(getprop persist.avium.root)
+ SLOT=$(getprop ro.boot.slot_suffix)
+ [ -z "$SLOT" ] && SLOT="_a"
+ echo "persist.avium.root=$VAL slot=$SLOT"
+-if [ "$VAL" = "1" ]; then IMG=/sdcard/avium/boot_ksu.img; else IMG=/sdcard/avium/boot_default.img; fi
++if [ "$VAL" = "1" ]; then IMG=/data/avium/boot_ksu.img; else IMG=/data/avium/boot_default.img; fi
+ echo "target image: $IMG"
+ if [ ! -f "$IMG" ]; then echo "MISSING $IMG, abort"; exit 1; fi
+ BLK=/dev/block/bootdevice/by-name/boot${SLOT}
+
+From 1744829a0c96e2de47bd93654530a008a6340d43 Mon Sep 17 00:00:00 2001
+From: builder <b@x>
+Date: Thu, 26 Nov 2026 16:04:50 +0800
+Subject: [PATCH 3/5] avium: trigger root boot switch on runtime property
+
+Change-Id: Ie94f521c896ba1b9bcf192028b719650a4c3b6f0
+---
+ prebuilt/common/etc/init/init.avium.rc    | 3 +++
+ sepolicy/common/private/property_contexts | 1 +
+ 2 files changed, 4 insertions(+)
+
+diff --git a/prebuilt/common/etc/init/init.avium.rc b/prebuilt/common/etc/init/init.avium.rc
+index 1d04fb2..5f6a86f 100644
+--- a/prebuilt/common/etc/init/init.avium.rc
++++ b/prebuilt/common/etc/init/init.avium.rc
+@@ -19,3 +19,6 @@ on property:persist.avium.root=1
+     exec - root -- /system/bin/sh /system_ext/bin/avium-root-switch.sh
+ on property:persist.avium.root=0
+     exec - root -- /system/bin/sh /system_ext/bin/avium-root-switch.sh
++
++on property:avium.root.trigger=*
++    exec - root -- /system/bin/sh /system_ext/bin/avium-root-switch.sh
+diff --git a/sepolicy/common/private/property_contexts b/sepolicy/common/private/property_contexts
+index ac5beae..876978e 100644
+--- a/sepolicy/common/private/property_contexts
++++ b/sepolicy/common/private/property_contexts
+@@ -7,4 +7,5 @@ ro.avium.maintainer                  u:object_r:custom_version_prop:s0
+ 
+ # Avium Prop
+ persist.avium.                       u:object_r:system_prop:s0
++avium.root.trigger               u:object_r:system_prop:s0
+ ro.avium.                            u:object_r:system_prop:s0
+
+From 3bd5b95cc08498e4541c21975632d3f1e229baaf Mon Sep 17 00:00:00 2001
+From: builder <b@x>
+Date: Thu, 26 Nov 2026 16:07:08 +0800
+Subject: [PATCH 4/5] avium: read boot images from unencrypted data path
+
+Change-Id: I63a5ed4064f28ad451820d09e83d02493abf27dd
+---
+ prebuilt/common/bin/avium-root-switch.sh | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/prebuilt/common/bin/avium-root-switch.sh b/prebuilt/common/bin/avium-root-switch.sh
+index a4600c1..70b1fbd 100644
+--- a/prebuilt/common/bin/avium-root-switch.sh
++++ b/prebuilt/common/bin/avium-root-switch.sh
+@@ -9,7 +9,12 @@ VAL=$(getprop persist.avium.root)
+ SLOT=$(getprop ro.boot.slot_suffix)
+ [ -z "$SLOT" ] && SLOT="_a"
+ echo "persist.avium.root=$VAL slot=$SLOT"
+-if [ "$VAL" = "1" ]; then IMG=/data/avium/boot_ksu.img; else IMG=/data/avium/boot_default.img; fi
++if [ "$VAL" = "1" ]; then NAME=boot_ksu.img; else NAME=boot_default.img; fi
++IMG=""
++for D in /data/unencrypted/avium /data/avium; do
++    if [ -f "$D/$NAME" ]; then IMG="$D/$NAME"; break; fi
++done
++[ -n "$IMG" ] || IMG="/data/unencrypted/avium/$NAME"
+ echo "target image: $IMG"
+ if [ ! -f "$IMG" ]; then echo "MISSING $IMG, abort"; exit 1; fi
+ BLK=/dev/block/bootdevice/by-name/boot${SLOT}
+
+From 4677aa098dd6cd7b9b809c3df3b13bff09922566 Mon Sep 17 00:00:00 2001
+From: builder <b@x>
+Date: Thu, 26 Nov 2026 16:22:16 +0800
+Subject: [PATCH 5/5] avium: package boot switch images into system_ext
+
+Change-Id: Ia110c2d1463daac5928851315f9de3a8fef2f96d
+---
+ config/avium.mk                               |   4 +++-
+ prebuilt/common/bin/avium-root-switch.sh      |   2 +-
+ .../common/etc/avium/boot/boot_default.img    | Bin 0 -> 67108864 bytes
+ prebuilt/common/etc/avium/boot/boot_ksu.img   | Bin 0 -> 67108864 bytes
+ 4 files changed, 4 insertions(+), 2 deletions(-)
+ create mode 100755 prebuilt/common/etc/avium/boot/boot_default.img
+ create mode 100755 prebuilt/common/etc/avium/boot/boot_ksu.img
+
+diff --git a/config/avium.mk b/config/avium.mk
+index 2473474..8705fd8 100644
+--- a/config/avium.mk
++++ b/config/avium.mk
+@@ -64,4 +64,6 @@ $(call inherit-product, vendor/avium/config/prop.mk)
+ # AviumUI init
+ PRODUCT_COPY_FILES += \
+      vendor/avium/prebuilt/common/etc/init/init.avium.rc:$(TARGET_COPY_OUT_SYSTEM_EXT)/etc/init/init.avium.rc \
+-     vendor/avium/prebuilt/common/bin/avium-root-switch.sh:$(TARGET_COPY_OUT_SYSTEM_EXT)/bin/avium-root-switch.sh
++     vendor/avium/prebuilt/common/bin/avium-root-switch.sh:$(TARGET_COPY_OUT_SYSTEM_EXT)/bin/avium-root-switch.sh \
++     vendor/avium/prebuilt/common/etc/avium/boot/boot_ksu.img:$(TARGET_COPY_OUT_SYSTEM_EXT)/etc/avium/boot/boot_ksu.img \
++     vendor/avium/prebuilt/common/etc/avium/boot/boot_default.img:$(TARGET_COPY_OUT_SYSTEM_EXT)/etc/avium/boot/boot_default.img
+diff --git a/prebuilt/common/bin/avium-root-switch.sh b/prebuilt/common/bin/avium-root-switch.sh
+index 70b1fbd..a640e07 100644
+--- a/prebuilt/common/bin/avium-root-switch.sh
++++ b/prebuilt/common/bin/avium-root-switch.sh
+@@ -11,7 +11,7 @@ SLOT=$(getprop ro.boot.slot_suffix)
+ echo "persist.avium.root=$VAL slot=$SLOT"
+ if [ "$VAL" = "1" ]; then NAME=boot_ksu.img; else NAME=boot_default.img; fi
+ IMG=""
+-for D in /data/unencrypted/avium /data/avium; do
++for D in /system_ext/etc/avium/boot /data/unencrypted/avium /data/avium; do
+     if [ -f "$D/$NAME" ]; then IMG="$D/$NAME"; break; fi
+ done
+ [ -n "$IMG" ] || IMG="/data/unencrypted/avium/$NAME"
+diff --git a/prebuilt/common/etc/avium/boot/boot_default.img b/prebuilt/common/etc/avium/boot/boot_default.img
+new file mode 100755
+index 0000000..849d6a0
+Binary files /dev/null and b/prebuilt/common/etc/avium/boot/boot_default.img differ
+diff --git a/prebuilt/common/etc/avium/boot/boot_ksu.img b/prebuilt/common/etc/avium/boot/boot_ksu.img
+new file mode 100755
+index 0000000..3bcfa02
+Binary files /dev/null and b/prebuilt/common/etc/avium/boot/boot_ksu.img differ

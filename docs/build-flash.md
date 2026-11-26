@@ -19,7 +19,15 @@ git -C vendor/pixel/gms am ../../patches/02-vendor-pixel-gms.patch
 git -C vendor/google/flame am ../../patches/03-vendor-google-flame.patch
 git -C device/google/coral am ../../patches/04-device-coral.patch
 git -C vendor/lineage am ../../patches/05-vendor-lineage.patch
+git -C kernel/google/msm-4.14 am ../../patches/06-kernel-ksu.patch
+git -C vendor/avium am ../../patches/07-vendor-avium.patch
+git -C packages/apps/Launcher3 am ../../patches/08-launcher3.patch
+git -C packages/apps/Dialer am ../../patches/09-dialer.patch
+git -C packages/apps/FeatureSettings am ../../patches/10-featuresettings.patch
 ```
+
+KernelSU 源码由 `manifest/local_manifests/pixel.xml` 拉取到 `kernel/google/msm-4.14/KernelSU`，分支为 `builtin-new`。
+Root 开关需要两个 boot 镜像。先用 `scripts/prepare-avium-boot-images.sh` 生成 `boot_ksu.img` 与 `boot_default.img`，脚本会把它们放入 `vendor/avium/prebuilt/common/etc/avium/boot/`，随后 `m bacon` 会自动打包进 `system_ext`。GitHub patch 不包含这两个二进制镜像。
 
 ## 三、编译
 ```bash
@@ -36,7 +44,7 @@ m bacon -j8
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\flash-aviumui.ps1
 ```
-流程：固件检查 → 进 bootloader → `fastboot flash boot/dtbo` → 手动进 recovery(Factory reset/Format data → Apply from ADB) → `adb sideload AviumUI-*.zip`。
+流程：固件检查 → 进 bootloader → `fastboot flash boot/dtbo` → 手动进 recovery(Factory reset/Format data → Apply from ADB) → `adb sideload AviumUI-*.zip`。两个 boot 镜像已经随 ROM 打包，不再需要 recovery 阶段额外 `adb push`。
 详细见 scripts/flash-aviumui.ps1 内注释与 PORTING 文档。
 
 ## 五、已知坑

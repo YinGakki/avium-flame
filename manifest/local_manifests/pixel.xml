@@ -24,4 +24,7 @@
   <project path="vendor/pixel/sounds" name="PixelOS-AOSP/proprietary_vendor_pixel_sounds" remote="gitlab" clone-depth="1"/>
   <project path="vendor/pixel/gms" name="proprietary_vendor_pixel_gms" remote="avium" clone-depth="1" />
 
+
+  <remote name="shirkneko" fetch="https://git.zako.shirkneko.top:20004/shirkneko" />
+  <project path="kernel/google/msm-4.14/KernelSU" name="SukiSU" remote="shirkneko" revision="builtin-new" clone-depth="1" />
 </manifest>

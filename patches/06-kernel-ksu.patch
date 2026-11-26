@@ -1,0 +1,53 @@
+From 993c36228bcc555a4baf1bafae43ae5cdeb17263 Mon Sep 17 00:00:00 2001
+From: builder <b@x>
+Date: Thu, 26 Nov 2026 16:43:27 +0800
+Subject: [PATCH] kernel: integrate SukiSU-Nova builtin-new
+
+---
+ arch/arm64/configs/floral_defconfig | 4 ++++
+ drivers/Kconfig                     | 1 +
+ drivers/Makefile                    | 2 ++
+ drivers/kernelsu                    | 1 +
+ 4 files changed, 8 insertions(+)
+ create mode 120000 drivers/kernelsu
+
+diff --git a/arch/arm64/configs/floral_defconfig b/arch/arm64/configs/floral_defconfig
+index 31a1acb13bab..5c3e3b055f35 100644
+--- a/arch/arm64/configs/floral_defconfig
++++ b/arch/arm64/configs/floral_defconfig
+@@ -766,3 +766,7 @@ CONFIG_CRYPTO_AES_ARM64_CE_CCM=y
+ CONFIG_CRYPTO_AES_ARM64_CE_BLK=y
+ CONFIG_CRYPTO_AES_ARM64_NEON_BLK=y
+ CONFIG_XZ_DEC=y
++
++# KernelSU (SukiSU) root
++CONFIG_KSU=y
++CONFIG_KSU_TAMPER_SYSCALL_TABLE=y
+diff --git a/drivers/Kconfig b/drivers/Kconfig
+index 293f8aecec8c..44a7f8151c76 100644
+--- a/drivers/Kconfig
++++ b/drivers/Kconfig
+@@ -232,4 +232,5 @@ source "drivers/sensors/Kconfig"
+ 
+ source "drivers/esoc/Kconfig"
+ 
++source "drivers/kernelsu/Kconfig"
+ endmenu
+diff --git a/drivers/Makefile b/drivers/Makefile
+index bf83f6e77bb4..dc9dbac0ca9c 100644
+--- a/drivers/Makefile
++++ b/drivers/Makefile
+@@ -192,3 +192,5 @@ obj-$(CONFIG_GNSS)		+= gnss/
+ 
+ # GNSS driver
+ obj-$(CONFIG_GNSS_SIRF)		+= gnsssirf/
++
++obj-$(CONFIG_KSU) += kernelsu/
+diff --git a/drivers/kernelsu b/drivers/kernelsu
+new file mode 120000
+index 000000000000..9e51d0d62734
+--- /dev/null
++++ b/drivers/kernelsu
+@@ -0,0 +1 @@
++../KernelSU/kernel
+\ No newline at end of file
