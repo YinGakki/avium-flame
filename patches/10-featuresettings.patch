@@ -1,7 +1,7 @@
 From 33bb74245933d9d3bea537870b9dce8b46f5573e Mon Sep 17 00:00:00 2001
 From: builder <b@x>
 Date: Wed, 25 Nov 2026 20:39:59 +0800
-Subject: [PATCH 1/2] FeatureSettings: add Root + Pixel features (VoLTE/Photos)
+Subject: [PATCH 1/7] FeatureSettings: add Root + Pixel features (VoLTE/Photos)
  toggle groups
 
 Change-Id: I973fe059999ad928dd288b6151a5fe3056024afc
@@ -165,7 +165,7 @@ index 4aa878f..6e35fe2 100644
 From b71d870e830ece3e910a7c623e139e4a2725a27d Mon Sep 17 00:00:00 2001
 From: builder <b@x>
 Date: Thu, 26 Nov 2026 16:04:50 +0800
-Subject: [PATCH 2/2] FeatureSettings: force root switch trigger on every
+Subject: [PATCH 2/7] FeatureSettings: force root switch trigger on every
  toggle
 
 Change-Id: Iad9f5597cb266625b53e96eae70f3f5960973048
@@ -193,3 +193,371 @@ index e7a35b5..4b729f4 100644
          private const val PROP_AVIUM_VOLTE = "persist.avium.volte"
          private const val PROP_AVIUM_GPHOTOS = "persist.avium.gphotos"
          private const val KEY_AVIUM_ROOT_ENABLE = "avium_root_enable"
+
+From 688db81d6bc4bfdfe0d0e8c06d4440a3c2b50761 Mon Sep 17 00:00:00 2001
+From: builder <b@x>
+Date: Thu, 26 Nov 2026 17:36:19 +0800
+Subject: [PATCH 3/7] FeatureSettings: make VoLTE patch a built-in status item
+
+Change-Id: I8c1135a5df9952d605060a30b59ee0849e4dbe9a
+---
+ .../exthm/featuresettings/CategorySettingsFragment.kt  | 10 ----------
+ app/src/main/res/values-zh-rCN/strings.xml             |  1 +
+ app/src/main/res/values/strings.xml                    |  1 +
+ app/src/main/res/xml/feature_settings_system.xml       |  8 ++++----
+ 4 files changed, 6 insertions(+), 14 deletions(-)
+
+diff --git a/app/src/main/java/org/exthm/featuresettings/CategorySettingsFragment.kt b/app/src/main/java/org/exthm/featuresettings/CategorySettingsFragment.kt
+index 4b729f4..d301a5a 100644
+--- a/app/src/main/java/org/exthm/featuresettings/CategorySettingsFragment.kt
++++ b/app/src/main/java/org/exthm/featuresettings/CategorySettingsFragment.kt
+@@ -242,14 +242,6 @@ class CategorySettingsFragment : SettingsBasePreferenceFragment() {
+                 true
+             }
+         }
+-        bindSwitch(KEY_AVIUM_VOLTE_FIX, SystemPropertiesHelper.getBoolean(PROP_AVIUM_VOLTE, true)) { enabled ->
+-            val v = if (enabled) "1" else "0"
+-            SystemPropertiesHelper.set(PROP_AVIUM_VOLTE, v)
+-            SystemPropertiesHelper.set("persist.dbg.ims_volte_enable", v)
+-            SystemPropertiesHelper.set("persist.dbg.volte_avail_ovr", v)
+-            SystemPropertiesHelper.set("persist.dbg.vt_avail_ovr", v)
+-            SystemPropertiesHelper.set("persist.dbg.wfc_avail_ovr", v)
+-        }
+         bindSwitch(KEY_AVIUM_GPHOTOS, SystemPropertiesHelper.getBoolean(PROP_AVIUM_GPHOTOS, false)) { enabled ->
+             SystemPropertiesHelper.set(PROP_AVIUM_GPHOTOS, if (enabled) "1" else "0")
+         }
+@@ -743,11 +735,9 @@ class CategorySettingsFragment : SettingsBasePreferenceFragment() {
+         private const val KEY_TEE_SOFT_DEBUG = "tee_soft_debug"
+         private const val PROP_AVIUM_ROOT = "persist.avium.root"
+         private const val PROP_AVIUM_ROOT_TRIGGER = "avium.root.trigger"
+-        private const val PROP_AVIUM_VOLTE = "persist.avium.volte"
+         private const val PROP_AVIUM_GPHOTOS = "persist.avium.gphotos"
+         private const val KEY_AVIUM_ROOT_ENABLE = "avium_root_enable"
+         private const val KEY_AVIUM_ROOT_MANAGER = "avium_root_manager"
+-        private const val KEY_AVIUM_VOLTE_FIX = "avium_volte_fix"
+         private const val KEY_AVIUM_GPHOTOS = "avium_gphotos_unlimited"
+ 
+         fun newInstance(categoryId: String): CategorySettingsFragment {
+diff --git a/app/src/main/res/values-zh-rCN/strings.xml b/app/src/main/res/values-zh-rCN/strings.xml
+index 2ee046f..413abf1 100644
+--- a/app/src/main/res/values-zh-rCN/strings.xml
++++ b/app/src/main/res/values-zh-rCN/strings.xml
+@@ -122,6 +122,7 @@
+     <string name="system_group_pixel_features">Pixel 特色功能</string>
+     <string name="avium_volte_fix_title">国内运营商 VoLTE 修复</string>
+     <string name="avium_volte_fix_summary">为移动 / 联通 / 电信启用 VoLTE</string>
++    <string name="avium_volte_builtin_summary">已内置并始终启用，无需开关</string>
+     <string name="avium_gphotos_unlimited_title">Google 相册无限空间</string>
+     <string name="avium_gphotos_unlimited_summary">伪装为 Pixel 1 获得无限原画质上传（需 Root）</string>
+ </resources>
+diff --git a/app/src/main/res/values/strings.xml b/app/src/main/res/values/strings.xml
+index 988be5b..f2a4595 100644
+--- a/app/src/main/res/values/strings.xml
++++ b/app/src/main/res/values/strings.xml
+@@ -136,6 +136,7 @@
+     <string name="system_group_pixel_features">Pixel features</string>
+     <string name="avium_volte_fix_title">VoLTE for China carriers</string>
+     <string name="avium_volte_fix_summary">Enable VoLTE for China Mobile / Unicom / Telecom</string>
++    <string name="avium_volte_builtin_summary">Built in and always enabled. No switch needed.</string>
+     <string name="avium_gphotos_unlimited_title">Google Photos unlimited</string>
+     <string name="avium_gphotos_unlimited_summary">Spoof device as Pixel 1 for unlimited original-quality uploads (requires root)</string>
+ </resources>
+diff --git a/app/src/main/res/xml/feature_settings_system.xml b/app/src/main/res/xml/feature_settings_system.xml
+index 6e35fe2..68228be 100644
+--- a/app/src/main/res/xml/feature_settings_system.xml
++++ b/app/src/main/res/xml/feature_settings_system.xml
+@@ -31,11 +31,11 @@
+     </PreferenceCategory>
+ 
+     <PreferenceCategory android:title="@string/system_group_pixel_features">
+-        <SwitchPreferenceCompat
+-            android:key="avium_volte_fix"
++        <Preference
++            android:key="avium_volte_status"
+             android:title="@string/avium_volte_fix_title"
+-            android:summary="@string/avium_volte_fix_summary"
+-            android:defaultValue="true" />
++            android:summary="@string/avium_volte_builtin_summary"
++            android:selectable="false" />
+         <SwitchPreferenceCompat
+             android:key="avium_gphotos_unlimited"
+             android:title="@string/avium_gphotos_unlimited_title"
+
+From a660e6dbe4dc8d52f0b0ffbbd05ae9cb5d238928 Mon Sep 17 00:00:00 2001
+From: avium-builder <builder@localhost>
+Date: Thu, 26 Nov 2026 20:12:14 +0800
+Subject: [PATCH 4/7] Revert "FeatureSettings: make VoLTE patch a built-in
+ status item"
+
+This reverts commit 688db81d6bc4bfdfe0d0e8c06d4440a3c2b50761.
+---
+ .../exthm/featuresettings/CategorySettingsFragment.kt  | 10 ++++++++++
+ app/src/main/res/values-zh-rCN/strings.xml             |  1 -
+ app/src/main/res/values/strings.xml                    |  1 -
+ app/src/main/res/xml/feature_settings_system.xml       |  8 ++++----
+ 4 files changed, 14 insertions(+), 6 deletions(-)
+
+diff --git a/app/src/main/java/org/exthm/featuresettings/CategorySettingsFragment.kt b/app/src/main/java/org/exthm/featuresettings/CategorySettingsFragment.kt
+index d301a5a..4b729f4 100644
+--- a/app/src/main/java/org/exthm/featuresettings/CategorySettingsFragment.kt
++++ b/app/src/main/java/org/exthm/featuresettings/CategorySettingsFragment.kt
+@@ -242,6 +242,14 @@ class CategorySettingsFragment : SettingsBasePreferenceFragment() {
+                 true
+             }
+         }
++        bindSwitch(KEY_AVIUM_VOLTE_FIX, SystemPropertiesHelper.getBoolean(PROP_AVIUM_VOLTE, true)) { enabled ->
++            val v = if (enabled) "1" else "0"
++            SystemPropertiesHelper.set(PROP_AVIUM_VOLTE, v)
++            SystemPropertiesHelper.set("persist.dbg.ims_volte_enable", v)
++            SystemPropertiesHelper.set("persist.dbg.volte_avail_ovr", v)
++            SystemPropertiesHelper.set("persist.dbg.vt_avail_ovr", v)
++            SystemPropertiesHelper.set("persist.dbg.wfc_avail_ovr", v)
++        }
+         bindSwitch(KEY_AVIUM_GPHOTOS, SystemPropertiesHelper.getBoolean(PROP_AVIUM_GPHOTOS, false)) { enabled ->
+             SystemPropertiesHelper.set(PROP_AVIUM_GPHOTOS, if (enabled) "1" else "0")
+         }
+@@ -735,9 +743,11 @@ class CategorySettingsFragment : SettingsBasePreferenceFragment() {
+         private const val KEY_TEE_SOFT_DEBUG = "tee_soft_debug"
+         private const val PROP_AVIUM_ROOT = "persist.avium.root"
+         private const val PROP_AVIUM_ROOT_TRIGGER = "avium.root.trigger"
++        private const val PROP_AVIUM_VOLTE = "persist.avium.volte"
+         private const val PROP_AVIUM_GPHOTOS = "persist.avium.gphotos"
+         private const val KEY_AVIUM_ROOT_ENABLE = "avium_root_enable"
+         private const val KEY_AVIUM_ROOT_MANAGER = "avium_root_manager"
++        private const val KEY_AVIUM_VOLTE_FIX = "avium_volte_fix"
+         private const val KEY_AVIUM_GPHOTOS = "avium_gphotos_unlimited"
+ 
+         fun newInstance(categoryId: String): CategorySettingsFragment {
+diff --git a/app/src/main/res/values-zh-rCN/strings.xml b/app/src/main/res/values-zh-rCN/strings.xml
+index 413abf1..2ee046f 100644
+--- a/app/src/main/res/values-zh-rCN/strings.xml
++++ b/app/src/main/res/values-zh-rCN/strings.xml
+@@ -122,7 +122,6 @@
+     <string name="system_group_pixel_features">Pixel 特色功能</string>
+     <string name="avium_volte_fix_title">国内运营商 VoLTE 修复</string>
+     <string name="avium_volte_fix_summary">为移动 / 联通 / 电信启用 VoLTE</string>
+-    <string name="avium_volte_builtin_summary">已内置并始终启用，无需开关</string>
+     <string name="avium_gphotos_unlimited_title">Google 相册无限空间</string>
+     <string name="avium_gphotos_unlimited_summary">伪装为 Pixel 1 获得无限原画质上传（需 Root）</string>
+ </resources>
+diff --git a/app/src/main/res/values/strings.xml b/app/src/main/res/values/strings.xml
+index f2a4595..988be5b 100644
+--- a/app/src/main/res/values/strings.xml
++++ b/app/src/main/res/values/strings.xml
+@@ -136,7 +136,6 @@
+     <string name="system_group_pixel_features">Pixel features</string>
+     <string name="avium_volte_fix_title">VoLTE for China carriers</string>
+     <string name="avium_volte_fix_summary">Enable VoLTE for China Mobile / Unicom / Telecom</string>
+-    <string name="avium_volte_builtin_summary">Built in and always enabled. No switch needed.</string>
+     <string name="avium_gphotos_unlimited_title">Google Photos unlimited</string>
+     <string name="avium_gphotos_unlimited_summary">Spoof device as Pixel 1 for unlimited original-quality uploads (requires root)</string>
+ </resources>
+diff --git a/app/src/main/res/xml/feature_settings_system.xml b/app/src/main/res/xml/feature_settings_system.xml
+index 68228be..6e35fe2 100644
+--- a/app/src/main/res/xml/feature_settings_system.xml
++++ b/app/src/main/res/xml/feature_settings_system.xml
+@@ -31,11 +31,11 @@
+     </PreferenceCategory>
+ 
+     <PreferenceCategory android:title="@string/system_group_pixel_features">
+-        <Preference
+-            android:key="avium_volte_status"
++        <SwitchPreferenceCompat
++            android:key="avium_volte_fix"
+             android:title="@string/avium_volte_fix_title"
+-            android:summary="@string/avium_volte_builtin_summary"
+-            android:selectable="false" />
++            android:summary="@string/avium_volte_fix_summary"
++            android:defaultValue="true" />
+         <SwitchPreferenceCompat
+             android:key="avium_gphotos_unlimited"
+             android:title="@string/avium_gphotos_unlimited_title"
+
+From 012fb9f6b8809634bb6f2058550fe34fa3a27f72 Mon Sep 17 00:00:00 2001
+From: builder <b@x>
+Date: Thu, 26 Nov 2026 20:27:37 +0800
+Subject: [PATCH 5/7] FeatureSettings: wire VoLTE trigger and remove fake
+ GPhotos switch
+
+Change-Id: Iaa11e653168d8c9a1db01334edccc992eec321de
+---
+ .../featuresettings/CategorySettingsFragment.kt   | 15 ++++-----------
+ app/src/main/res/xml/feature_settings_system.xml  |  5 -----
+ 2 files changed, 4 insertions(+), 16 deletions(-)
+
+diff --git a/app/src/main/java/org/exthm/featuresettings/CategorySettingsFragment.kt b/app/src/main/java/org/exthm/featuresettings/CategorySettingsFragment.kt
+index 4b729f4..7a217a2 100644
+--- a/app/src/main/java/org/exthm/featuresettings/CategorySettingsFragment.kt
++++ b/app/src/main/java/org/exthm/featuresettings/CategorySettingsFragment.kt
+@@ -243,15 +243,9 @@ class CategorySettingsFragment : SettingsBasePreferenceFragment() {
+             }
+         }
+         bindSwitch(KEY_AVIUM_VOLTE_FIX, SystemPropertiesHelper.getBoolean(PROP_AVIUM_VOLTE, true)) { enabled ->
+-            val v = if (enabled) "1" else "0"
+-            SystemPropertiesHelper.set(PROP_AVIUM_VOLTE, v)
+-            SystemPropertiesHelper.set("persist.dbg.ims_volte_enable", v)
+-            SystemPropertiesHelper.set("persist.dbg.volte_avail_ovr", v)
+-            SystemPropertiesHelper.set("persist.dbg.vt_avail_ovr", v)
+-            SystemPropertiesHelper.set("persist.dbg.wfc_avail_ovr", v)
+-        }
+-        bindSwitch(KEY_AVIUM_GPHOTOS, SystemPropertiesHelper.getBoolean(PROP_AVIUM_GPHOTOS, false)) { enabled ->
+-            SystemPropertiesHelper.set(PROP_AVIUM_GPHOTOS, if (enabled) "1" else "0")
++            SystemPropertiesHelper.set(PROP_AVIUM_VOLTE, if (enabled) "1" else "0")
++            SystemPropertiesHelper.set(PROP_AVIUM_VOLTE_TRIGGER, System.currentTimeMillis().toString())
++            showRebootRequiredDialog()
+         }
+         // ===== end added =====
+ 
+@@ -744,11 +738,10 @@ class CategorySettingsFragment : SettingsBasePreferenceFragment() {
+         private const val PROP_AVIUM_ROOT = "persist.avium.root"
+         private const val PROP_AVIUM_ROOT_TRIGGER = "avium.root.trigger"
+         private const val PROP_AVIUM_VOLTE = "persist.avium.volte"
+-        private const val PROP_AVIUM_GPHOTOS = "persist.avium.gphotos"
++        private const val PROP_AVIUM_VOLTE_TRIGGER = "avium.volte.trigger"
+         private const val KEY_AVIUM_ROOT_ENABLE = "avium_root_enable"
+         private const val KEY_AVIUM_ROOT_MANAGER = "avium_root_manager"
+         private const val KEY_AVIUM_VOLTE_FIX = "avium_volte_fix"
+-        private const val KEY_AVIUM_GPHOTOS = "avium_gphotos_unlimited"
+ 
+         fun newInstance(categoryId: String): CategorySettingsFragment {
+             return CategorySettingsFragment().apply {
+diff --git a/app/src/main/res/xml/feature_settings_system.xml b/app/src/main/res/xml/feature_settings_system.xml
+index 6e35fe2..006bde6 100644
+--- a/app/src/main/res/xml/feature_settings_system.xml
++++ b/app/src/main/res/xml/feature_settings_system.xml
+@@ -36,11 +36,6 @@
+             android:title="@string/avium_volte_fix_title"
+             android:summary="@string/avium_volte_fix_summary"
+             android:defaultValue="true" />
+-        <SwitchPreferenceCompat
+-            android:key="avium_gphotos_unlimited"
+-            android:title="@string/avium_gphotos_unlimited_title"
+-            android:summary="@string/avium_gphotos_unlimited_summary"
+-            android:defaultValue="false" />
+     </PreferenceCategory>
+ 
+     <PreferenceCategory android:title="@string/system_group_spoof">
+
+From bcff2c8bc436b2a1f81f85fcb054ce31fdee5554 Mon Sep 17 00:00:00 2001
+From: builder <b@x>
+Date: Thu, 26 Nov 2026 21:56:49 +0800
+Subject: [PATCH 6/7] FeatureSettings: restore real GPhotos switch
+
+Change-Id: Ibad343fedcd12a64fff653c0649f23964866dbd3
+---
+ .../featuresettings/CategorySettingsFragment.kt     | 13 +++++++++++++
+ app/src/main/res/xml/feature_settings_system.xml    |  5 +++++
+ 2 files changed, 18 insertions(+)
+
+diff --git a/app/src/main/java/org/exthm/featuresettings/CategorySettingsFragment.kt b/app/src/main/java/org/exthm/featuresettings/CategorySettingsFragment.kt
+index 7a217a2..41c906f 100644
+--- a/app/src/main/java/org/exthm/featuresettings/CategorySettingsFragment.kt
++++ b/app/src/main/java/org/exthm/featuresettings/CategorySettingsFragment.kt
+@@ -247,6 +247,16 @@ class CategorySettingsFragment : SettingsBasePreferenceFragment() {
+             SystemPropertiesHelper.set(PROP_AVIUM_VOLTE_TRIGGER, System.currentTimeMillis().toString())
+             showRebootRequiredDialog()
+         }
++        val rootOn = SystemPropertiesHelper.getBoolean(PROP_AVIUM_ROOT, false)
++        val gphotosPref = findPreference<SwitchPreferenceCompat>(KEY_AVIUM_GPHOTOS)
++        gphotosPref?.isChecked = SystemPropertiesHelper.getBoolean(PROP_AVIUM_GPHOTOS, false)
++        gphotosPref?.isEnabled = rootOn
++        gphotosPref?.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
++            val enabled = newValue as Boolean
++            SystemPropertiesHelper.set(PROP_AVIUM_GPHOTOS, if (enabled) "1" else "0")
++            SystemPropertiesHelper.set(PROP_AVIUM_GPHOTOS_TRIGGER, System.currentTimeMillis().toString())
++            true
++        }
+         // ===== end added =====
+ 
+         bindSwitch(
+@@ -739,9 +749,12 @@ class CategorySettingsFragment : SettingsBasePreferenceFragment() {
+         private const val PROP_AVIUM_ROOT_TRIGGER = "avium.root.trigger"
+         private const val PROP_AVIUM_VOLTE = "persist.avium.volte"
+         private const val PROP_AVIUM_VOLTE_TRIGGER = "avium.volte.trigger"
++        private const val PROP_AVIUM_GPHOTOS = "persist.avium.gphotos"
++        private const val PROP_AVIUM_GPHOTOS_TRIGGER = "avium.gphotos.trigger"
+         private const val KEY_AVIUM_ROOT_ENABLE = "avium_root_enable"
+         private const val KEY_AVIUM_ROOT_MANAGER = "avium_root_manager"
+         private const val KEY_AVIUM_VOLTE_FIX = "avium_volte_fix"
++        private const val KEY_AVIUM_GPHOTOS = "avium_gphotos_unlimited"
+ 
+         fun newInstance(categoryId: String): CategorySettingsFragment {
+             return CategorySettingsFragment().apply {
+diff --git a/app/src/main/res/xml/feature_settings_system.xml b/app/src/main/res/xml/feature_settings_system.xml
+index 006bde6..6e35fe2 100644
+--- a/app/src/main/res/xml/feature_settings_system.xml
++++ b/app/src/main/res/xml/feature_settings_system.xml
+@@ -36,6 +36,11 @@
+             android:title="@string/avium_volte_fix_title"
+             android:summary="@string/avium_volte_fix_summary"
+             android:defaultValue="true" />
++        <SwitchPreferenceCompat
++            android:key="avium_gphotos_unlimited"
++            android:title="@string/avium_gphotos_unlimited_title"
++            android:summary="@string/avium_gphotos_unlimited_summary"
++            android:defaultValue="false" />
+     </PreferenceCategory>
+ 
+     <PreferenceCategory android:title="@string/system_group_spoof">
+
+From 9aad93deb1fbbb512418fa3355ebd9900162c65b Mon Sep 17 00:00:00 2001
+From: avium-builder <builder@localhost>
+Date: Thu, 26 Nov 2026 23:09:43 +0800
+Subject: [PATCH 7/7] Revert "FeatureSettings: restore real GPhotos switch"
+
+This reverts commit bcff2c8bc436b2a1f81f85fcb054ce31fdee5554.
+---
+ .../featuresettings/CategorySettingsFragment.kt     | 13 -------------
+ app/src/main/res/xml/feature_settings_system.xml    |  5 -----
+ 2 files changed, 18 deletions(-)
+
+diff --git a/app/src/main/java/org/exthm/featuresettings/CategorySettingsFragment.kt b/app/src/main/java/org/exthm/featuresettings/CategorySettingsFragment.kt
+index 41c906f..7a217a2 100644
+--- a/app/src/main/java/org/exthm/featuresettings/CategorySettingsFragment.kt
++++ b/app/src/main/java/org/exthm/featuresettings/CategorySettingsFragment.kt
+@@ -247,16 +247,6 @@ class CategorySettingsFragment : SettingsBasePreferenceFragment() {
+             SystemPropertiesHelper.set(PROP_AVIUM_VOLTE_TRIGGER, System.currentTimeMillis().toString())
+             showRebootRequiredDialog()
+         }
+-        val rootOn = SystemPropertiesHelper.getBoolean(PROP_AVIUM_ROOT, false)
+-        val gphotosPref = findPreference<SwitchPreferenceCompat>(KEY_AVIUM_GPHOTOS)
+-        gphotosPref?.isChecked = SystemPropertiesHelper.getBoolean(PROP_AVIUM_GPHOTOS, false)
+-        gphotosPref?.isEnabled = rootOn
+-        gphotosPref?.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+-            val enabled = newValue as Boolean
+-            SystemPropertiesHelper.set(PROP_AVIUM_GPHOTOS, if (enabled) "1" else "0")
+-            SystemPropertiesHelper.set(PROP_AVIUM_GPHOTOS_TRIGGER, System.currentTimeMillis().toString())
+-            true
+-        }
+         // ===== end added =====
+ 
+         bindSwitch(
+@@ -749,12 +739,9 @@ class CategorySettingsFragment : SettingsBasePreferenceFragment() {
+         private const val PROP_AVIUM_ROOT_TRIGGER = "avium.root.trigger"
+         private const val PROP_AVIUM_VOLTE = "persist.avium.volte"
+         private const val PROP_AVIUM_VOLTE_TRIGGER = "avium.volte.trigger"
+-        private const val PROP_AVIUM_GPHOTOS = "persist.avium.gphotos"
+-        private const val PROP_AVIUM_GPHOTOS_TRIGGER = "avium.gphotos.trigger"
+         private const val KEY_AVIUM_ROOT_ENABLE = "avium_root_enable"
+         private const val KEY_AVIUM_ROOT_MANAGER = "avium_root_manager"
+         private const val KEY_AVIUM_VOLTE_FIX = "avium_volte_fix"
+-        private const val KEY_AVIUM_GPHOTOS = "avium_gphotos_unlimited"
+ 
+         fun newInstance(categoryId: String): CategorySettingsFragment {
+             return CategorySettingsFragment().apply {
+diff --git a/app/src/main/res/xml/feature_settings_system.xml b/app/src/main/res/xml/feature_settings_system.xml
+index 6e35fe2..006bde6 100644
+--- a/app/src/main/res/xml/feature_settings_system.xml
++++ b/app/src/main/res/xml/feature_settings_system.xml
+@@ -36,11 +36,6 @@
+             android:title="@string/avium_volte_fix_title"
+             android:summary="@string/avium_volte_fix_summary"
+             android:defaultValue="true" />
+-        <SwitchPreferenceCompat
+-            android:key="avium_gphotos_unlimited"
+-            android:title="@string/avium_gphotos_unlimited_title"
+-            android:summary="@string/avium_gphotos_unlimited_summary"
+-            android:defaultValue="false" />
+     </PreferenceCategory>
+ 
+     <PreferenceCategory android:title="@string/system_group_spoof">

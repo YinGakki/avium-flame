@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## v3.0-candidate — 2026-11-27
+第三版候选包已编译成功，等待真机确认后定版。ROM 产物不写入 GitHub 仓库。
+
+- **编译**：`BUILD END rc=0 @ 2026-11-27 08:09:43`，产物为 2.1G GMS 版本；主 boot 已确认 `CONFIG_KSU is not set`。
+- **Root 开关**：两个 boot 镜像随 ROM 打包到 `system_ext/etc/avium/boot/`，不再需要 recovery 阶段额外复制。
+- **VoLTE**：新增真开关所需两套 MBN（中国运营商 / Pixel 原版），init 服务按 `persist.avium.volte` 切换并清 FDR。
+- **GMS**：保留 FilesPrebuilt；移除 Maps/MapsDynamite/Gmail/Scribe/Calendar。
+- **其他**：Dialer 自动录音、Launcher 字母索引震动修复。
+- **未纳入**：GPhotos 无限空间开关、LocalSend、MusicFree。
+- **patch**：更新 07-vendor-avium、10-featuresettings；新增 scripts/prepare-volte-mbn-sets.sh。
+
+
 ## v2 recipe — 2026-11-26
 第二版源码配方。ROM 产物仍不写入 GitHub 仓库。
 
