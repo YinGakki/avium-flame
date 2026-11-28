@@ -1,7 +1,7 @@
 From 33bb74245933d9d3bea537870b9dce8b46f5573e Mon Sep 17 00:00:00 2001
 From: builder <b@x>
 Date: Wed, 25 Nov 2026 20:39:59 +0800
-Subject: [PATCH 1/7] FeatureSettings: add Root + Pixel features (VoLTE/Photos)
+Subject: [PATCH 1/8] FeatureSettings: add Root + Pixel features (VoLTE/Photos)
  toggle groups
 
 Change-Id: I973fe059999ad928dd288b6151a5fe3056024afc
@@ -165,7 +165,7 @@ index 4aa878f..6e35fe2 100644
 From b71d870e830ece3e910a7c623e139e4a2725a27d Mon Sep 17 00:00:00 2001
 From: builder <b@x>
 Date: Thu, 26 Nov 2026 16:04:50 +0800
-Subject: [PATCH 2/7] FeatureSettings: force root switch trigger on every
+Subject: [PATCH 2/8] FeatureSettings: force root switch trigger on every
  toggle
 
 Change-Id: Iad9f5597cb266625b53e96eae70f3f5960973048
@@ -197,7 +197,7 @@ index e7a35b5..4b729f4 100644
 From 688db81d6bc4bfdfe0d0e8c06d4440a3c2b50761 Mon Sep 17 00:00:00 2001
 From: builder <b@x>
 Date: Thu, 26 Nov 2026 17:36:19 +0800
-Subject: [PATCH 3/7] FeatureSettings: make VoLTE patch a built-in status item
+Subject: [PATCH 3/8] FeatureSettings: make VoLTE patch a built-in status item
 
 Change-Id: I8c1135a5df9952d605060a30b59ee0849e4dbe9a
 ---
@@ -286,7 +286,7 @@ index 6e35fe2..68228be 100644
 From a660e6dbe4dc8d52f0b0ffbbd05ae9cb5d238928 Mon Sep 17 00:00:00 2001
 From: avium-builder <builder@localhost>
 Date: Thu, 26 Nov 2026 20:12:14 +0800
-Subject: [PATCH 4/7] Revert "FeatureSettings: make VoLTE patch a built-in
+Subject: [PATCH 4/8] Revert "FeatureSettings: make VoLTE patch a built-in
  status item"
 
 This reverts commit 688db81d6bc4bfdfe0d0e8c06d4440a3c2b50761.
@@ -376,7 +376,7 @@ index 68228be..6e35fe2 100644
 From 012fb9f6b8809634bb6f2058550fe34fa3a27f72 Mon Sep 17 00:00:00 2001
 From: builder <b@x>
 Date: Thu, 26 Nov 2026 20:27:37 +0800
-Subject: [PATCH 5/7] FeatureSettings: wire VoLTE trigger and remove fake
+Subject: [PATCH 5/8] FeatureSettings: wire VoLTE trigger and remove fake
  GPhotos switch
 
 Change-Id: Iaa11e653168d8c9a1db01334edccc992eec321de
@@ -441,7 +441,7 @@ index 6e35fe2..006bde6 100644
 From bcff2c8bc436b2a1f81f85fcb054ce31fdee5554 Mon Sep 17 00:00:00 2001
 From: builder <b@x>
 Date: Thu, 26 Nov 2026 21:56:49 +0800
-Subject: [PATCH 6/7] FeatureSettings: restore real GPhotos switch
+Subject: [PATCH 6/8] FeatureSettings: restore real GPhotos switch
 
 Change-Id: Ibad343fedcd12a64fff653c0649f23964866dbd3
 ---
@@ -503,7 +503,7 @@ index 006bde6..6e35fe2 100644
 From 9aad93deb1fbbb512418fa3355ebd9900162c65b Mon Sep 17 00:00:00 2001
 From: avium-builder <builder@localhost>
 Date: Thu, 26 Nov 2026 23:09:43 +0800
-Subject: [PATCH 7/7] Revert "FeatureSettings: restore real GPhotos switch"
+Subject: [PATCH 7/8] Revert "FeatureSettings: restore real GPhotos switch"
 
 This reverts commit bcff2c8bc436b2a1f81f85fcb054ce31fdee5554.
 ---
@@ -561,3 +561,47 @@ index 6e35fe2..006bde6 100644
      </PreferenceCategory>
  
      <PreferenceCategory android:title="@string/system_group_spoof">
+
+From 4831b9f25879f6599dd52d559a4d8a1b866d42f9 Mon Sep 17 00:00:00 2001
+From: builder <b@x>
+Date: Fri, 27 Nov 2026 15:47:39 +0800
+Subject: [PATCH 8/8] FeatureSettings: use unified switch trigger property
+
+Change-Id: Iaf3ff7e24c877a8b5d6d5bc8614adedc209f85ec
+---
+ .../org/exthm/featuresettings/CategorySettingsFragment.kt  | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
+
+diff --git a/app/src/main/java/org/exthm/featuresettings/CategorySettingsFragment.kt b/app/src/main/java/org/exthm/featuresettings/CategorySettingsFragment.kt
+index 7a217a2..4ed7679 100644
+--- a/app/src/main/java/org/exthm/featuresettings/CategorySettingsFragment.kt
++++ b/app/src/main/java/org/exthm/featuresettings/CategorySettingsFragment.kt
+@@ -232,7 +232,7 @@ class CategorySettingsFragment : SettingsBasePreferenceFragment() {
+         // ===== Avium Root / Pixel features (added) =====
+         bindSwitch(KEY_AVIUM_ROOT_ENABLE, SystemPropertiesHelper.getBoolean(PROP_AVIUM_ROOT, false)) { enabled ->
+             SystemPropertiesHelper.set(PROP_AVIUM_ROOT, if (enabled) "1" else "0")
+-            SystemPropertiesHelper.set(PROP_AVIUM_ROOT_TRIGGER, System.currentTimeMillis().toString())
++            SystemPropertiesHelper.set(PROP_AVIUM_SWITCH_TRIGGER, System.currentTimeMillis().toString())
+             showRebootRequiredDialog()
+         }
+         findPreference<Preference>(KEY_AVIUM_ROOT_MANAGER)?.apply {
+@@ -244,7 +244,7 @@ class CategorySettingsFragment : SettingsBasePreferenceFragment() {
+         }
+         bindSwitch(KEY_AVIUM_VOLTE_FIX, SystemPropertiesHelper.getBoolean(PROP_AVIUM_VOLTE, true)) { enabled ->
+             SystemPropertiesHelper.set(PROP_AVIUM_VOLTE, if (enabled) "1" else "0")
+-            SystemPropertiesHelper.set(PROP_AVIUM_VOLTE_TRIGGER, System.currentTimeMillis().toString())
++            SystemPropertiesHelper.set(PROP_AVIUM_SWITCH_TRIGGER, System.currentTimeMillis().toString())
+             showRebootRequiredDialog()
+         }
+         // ===== end added =====
+@@ -736,9 +736,8 @@ class CategorySettingsFragment : SettingsBasePreferenceFragment() {
+ 
+         private const val KEY_TEE_SOFT_DEBUG = "tee_soft_debug"
+         private const val PROP_AVIUM_ROOT = "persist.avium.root"
+-        private const val PROP_AVIUM_ROOT_TRIGGER = "avium.root.trigger"
++        private const val PROP_AVIUM_SWITCH_TRIGGER = "avium.switch.trigger"
+         private const val PROP_AVIUM_VOLTE = "persist.avium.volte"
+-        private const val PROP_AVIUM_VOLTE_TRIGGER = "avium.volte.trigger"
+         private const val KEY_AVIUM_ROOT_ENABLE = "avium_root_enable"
+         private const val KEY_AVIUM_ROOT_MANAGER = "avium_root_manager"
+         private const val KEY_AVIUM_VOLTE_FIX = "avium_volte_fix"

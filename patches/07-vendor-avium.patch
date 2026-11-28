@@ -1,7 +1,7 @@
 From 8e157643fd96d0a6586a8fbb223675e9d2c82351 Mon Sep 17 00:00:00 2001
 From: builder <b@x>
 Date: Wed, 25 Nov 2026 21:17:35 +0800
-Subject: [PATCH 01/10] avium: add aviumctl root boot-switch (init service +
+Subject: [PATCH 01/15] avium: add aviumctl root boot-switch (init service +
  sepolicy)
 
 Change-Id: I2bea4107878002a4259563fc8432c1476a06f4de
@@ -86,7 +86,7 @@ index 3a64af2..ac29491 100644
 From 096e6dac1ba2e8b0f8793c66e3ccd74e7a7e7e10 Mon Sep 17 00:00:00 2001
 From: builder <b@x>
 Date: Wed, 25 Nov 2026 21:44:27 +0800
-Subject: [PATCH 02/10] avium: aviumctl switch reads boot images from
+Subject: [PATCH 02/15] avium: aviumctl switch reads boot images from
  /data/avium
 
 Change-Id: I2032feed3279acc1525010418b553b8d0233c95f
@@ -111,7 +111,7 @@ index a1d8a8b..a4600c1 100644
 From 1744829a0c96e2de47bd93654530a008a6340d43 Mon Sep 17 00:00:00 2001
 From: builder <b@x>
 Date: Thu, 26 Nov 2026 16:04:50 +0800
-Subject: [PATCH 03/10] avium: trigger root boot switch on runtime property
+Subject: [PATCH 03/15] avium: trigger root boot switch on runtime property
 
 Change-Id: Ie94f521c896ba1b9bcf192028b719650a4c3b6f0
 ---
@@ -144,7 +144,7 @@ index ac5beae..876978e 100644
 From 3bd5b95cc08498e4541c21975632d3f1e229baaf Mon Sep 17 00:00:00 2001
 From: builder <b@x>
 Date: Thu, 26 Nov 2026 16:07:08 +0800
-Subject: [PATCH 04/10] avium: read boot images from unencrypted data path
+Subject: [PATCH 04/15] avium: read boot images from unencrypted data path
 
 Change-Id: I63a5ed4064f28ad451820d09e83d02493abf27dd
 ---
@@ -173,7 +173,7 @@ index a4600c1..70b1fbd 100644
 From 4677aa098dd6cd7b9b809c3df3b13bff09922566 Mon Sep 17 00:00:00 2001
 From: builder <b@x>
 Date: Thu, 26 Nov 2026 16:22:16 +0800
-Subject: [PATCH 05/10] avium: package boot switch images into system_ext
+Subject: [PATCH 05/15] avium: package boot switch images into system_ext
 
 Change-Id: Ia110c2d1463daac5928851315f9de3a8fef2f96d
 ---
@@ -222,7 +222,7 @@ Binary files /dev/null and b/prebuilt/common/etc/avium/boot/boot_ksu.img differ
 From cc544b61c809c1a4781f780df602a769fd65a483 Mon Sep 17 00:00:00 2001
 From: builder <b@x>
 Date: Thu, 26 Nov 2026 20:29:23 +0800
-Subject: [PATCH 06/10] avium: implement real VoLTE MBN switch
+Subject: [PATCH 06/15] avium: implement real VoLTE MBN switch
 
 Change-Id: I179999f20b4e9a1fb2d61cece6a1f84dd2cb6653
 ---
@@ -1662,7 +1662,7 @@ index 876978e..c2b0843 100644
 From 140b0cf9e37ec6f61529f173c8e958e2b3a3160c Mon Sep 17 00:00:00 2001
 From: builder <b@x>
 Date: Thu, 26 Nov 2026 21:56:49 +0800
-Subject: [PATCH 07/10] avium: add GPhotos Zygisk module switch
+Subject: [PATCH 07/15] avium: add GPhotos Zygisk module switch
 
 Change-Id: I693aac011fe53785af939b21f137ec688d630aa2
 ---
@@ -2067,7 +2067,7 @@ index c2b0843..a69f3b2 100644
 From 2193401367575a94f22d8c5439cdc4b6f08c1d0a Mon Sep 17 00:00:00 2001
 From: avium-builder <builder@localhost>
 Date: Thu, 26 Nov 2026 23:09:42 +0800
-Subject: [PATCH 08/10] Revert "avium: add GPhotos Zygisk module switch"
+Subject: [PATCH 08/15] Revert "avium: add GPhotos Zygisk module switch"
 
 This reverts commit 140b0cf9e37ec6f61529f173c8e958e2b3a3160c.
 ---
@@ -2472,7 +2472,7 @@ index a69f3b2..c2b0843 100644
 From 1bcb9ea74c80f3d80e91a76aa17af3e36b917568 Mon Sep 17 00:00:00 2001
 From: builder <b@x>
 Date: Thu, 26 Nov 2026 23:15:26 +0800
-Subject: [PATCH 09/10] avium: package VoLTE switch script into system_ext
+Subject: [PATCH 09/15] avium: package VoLTE switch script into system_ext
 
 Change-Id: If6b8c106c2ab641d361fd12567d630dd1e6f6f07
 ---
@@ -2494,7 +2494,7 @@ index 000e741..26f0ffe 100644
 From 0eff900c5d149fcbff920d9a0997eb410effad85 Mon Sep 17 00:00:00 2001
 From: builder <b@x>
 Date: Fri, 27 Nov 2026 03:45:33 +0800
-Subject: [PATCH 10/10] avium: fix VoLTE sepolicy type for system_ext
+Subject: [PATCH 10/15] avium: fix VoLTE sepolicy type for system_ext
 
 Change-Id: If058df4dd9f406a4ef74e7e34a30a127f6157701
 ---
@@ -2516,3 +2516,394 @@ index 500d0a8..16fa041 100644
  allow init vendor_file:dir { search read open getattr mounton };
  allow init vendor_file:filesystem { mount unmount remount };
  allow init shell_exec:file { execute read open getattr };
+
+From ae6b9b74727fedeb8ed28b15846b2bfd4f510c10 Mon Sep 17 00:00:00 2001
+From: builder <b@x>
+Date: Fri, 27 Nov 2026 15:47:39 +0800
+Subject: [PATCH 11/15] avium: unified early-boot switch service and bundle
+ SukiSU manager
+
+Change-Id: Ia1cdaa1eaa2fb4b7efe08a793616cfe6994a3827
+---
+ config/avium.mk                           |   7 +++-
+ prebuilt/common/app/Android.bp            |  10 +++++
+ prebuilt/common/app/SukiSU/SukiSU.apk     | Bin 0 -> 12016450 bytes
+ prebuilt/common/bin/avium-boot-prepare.sh |  47 ++++++++++++++++++++++
+ prebuilt/common/bin/avium-root-switch.sh  |  25 ------------
+ prebuilt/common/bin/avium-volte-switch.sh |  21 ----------
+ prebuilt/common/etc/init/init.avium.rc    |  32 +++++++--------
+ sepolicy/common/private/init.te           |   5 +++
+ sepolicy/common/private/property_contexts |   1 +
+ 9 files changed, 83 insertions(+), 65 deletions(-)
+ create mode 100644 prebuilt/common/app/Android.bp
+ create mode 100755 prebuilt/common/app/SukiSU/SukiSU.apk
+ create mode 100755 prebuilt/common/bin/avium-boot-prepare.sh
+ delete mode 100644 prebuilt/common/bin/avium-root-switch.sh
+ delete mode 100755 prebuilt/common/bin/avium-volte-switch.sh
+
+diff --git a/config/avium.mk b/config/avium.mk
+index 26f0ffe..22cfba2 100644
+--- a/config/avium.mk
++++ b/config/avium.mk
+@@ -65,7 +65,10 @@ $(call inherit-product, vendor/avium/config/volte.mk)
+ # AviumUI init
+ PRODUCT_COPY_FILES += \
+      vendor/avium/prebuilt/common/etc/init/init.avium.rc:$(TARGET_COPY_OUT_SYSTEM_EXT)/etc/init/init.avium.rc \
+-     vendor/avium/prebuilt/common/bin/avium-root-switch.sh:$(TARGET_COPY_OUT_SYSTEM_EXT)/bin/avium-root-switch.sh \
+      vendor/avium/prebuilt/common/etc/avium/boot/boot_ksu.img:$(TARGET_COPY_OUT_SYSTEM_EXT)/etc/avium/boot/boot_ksu.img \
+      vendor/avium/prebuilt/common/etc/avium/boot/boot_default.img:$(TARGET_COPY_OUT_SYSTEM_EXT)/etc/avium/boot/boot_default.img \
+-     vendor/avium/prebuilt/common/bin/avium-volte-switch.sh:$(TARGET_COPY_OUT_SYSTEM_EXT)/bin/avium-volte-switch.sh
++     vendor/avium/prebuilt/common/bin/avium-boot-prepare.sh:$(TARGET_COPY_OUT_SYSTEM_EXT)/bin/avium-boot-prepare.sh
++
++# AviumUI apps
++PRODUCT_PACKAGES += \
++     SukiSU
+diff --git a/prebuilt/common/app/Android.bp b/prebuilt/common/app/Android.bp
+new file mode 100644
+index 0000000..ec75aaf
+--- /dev/null
++++ b/prebuilt/common/app/Android.bp
+@@ -0,0 +1,10 @@
++android_app_import {
++    name: "SukiSU",
++    apk: "SukiSU/SukiSU.apk",
++    presigned: true,
++    dex_preopt: {
++        enabled: false,
++    },
++    privileged: false,
++    system_ext_specific: true,
++}
+diff --git a/prebuilt/common/app/SukiSU/SukiSU.apk b/prebuilt/common/app/SukiSU/SukiSU.apk
+new file mode 100755
+index 0000000..ab54cd1
+Binary files /dev/null and b/prebuilt/common/app/SukiSU/SukiSU.apk differ
+diff --git a/prebuilt/common/bin/avium-boot-prepare.sh b/prebuilt/common/bin/avium-boot-prepare.sh
+new file mode 100755
+index 0000000..d3474fa
+--- /dev/null
++++ b/prebuilt/common/bin/avium-boot-prepare.sh
+@@ -0,0 +1,47 @@
++#!/system/bin/sh
++# Runs early at boot (post-fs-data), before other partitions settle.
++# 1) VoLTE: bind-mount the selected MBN set BEFORE modem reads it.
++# 2) Root: if pending flag differs from what is flashed, dd the right boot image.
++LOG=/data/avium-boot.log
++mkdir -p /data/system/avium 2>/dev/null
++exec >>"$LOG" 2>&1
++echo "=== boot-prepare $(date) slot=$(getprop ro.boot.slot_suffix) ==="
++
++ROOT=$(getprop persist.avium.root)
++VOLTE=$(getprop persist.avium.volte)
++[ -z "$ROOT" ] && ROOT=0
++[ -z "$VOLTE" ] && VOLTE=1
++echo "persist.avium.root=$ROOT persist.avium.volte=$VOLTE"
++
++# ---- VoLTE MBN set ----
++TARGET=/vendor/rfs/msm/mpss/readonly/vendor/mbn/mcfg_sw
++if [ "$VOLTE" = "1" ]; then SRC=/system_ext/etc/avium/volte/cn/mcfg_sw; else SRC=/system_ext/etc/avium/volte/stock/mcfg_sw; fi
++if [ -d "$SRC" ] && [ -d "$TARGET" ]; then
++    mount -o bind "$SRC" "$TARGET"
++    echo "volte bind rc=$? src=$SRC"
++else
++    echo "volte skip: src=$SRC target=$TARGET"
++fi
++setprop persist.dbg.ims_volte_enable "$VOLTE"
++setprop persist.dbg.volte_avail_ovr "$VOLTE"
++setprop persist.dbg.vt_avail_ovr "$VOLTE"
++setprop persist.dbg.wfc_avail_ovr "$VOLTE"
++rm -f /data/vendor/modem_fdr/fdr_check 2>/dev/null
++
++# ---- Root boot image ----
++SLOT=$(getprop ro.boot.slot_suffix)
++[ -z "$SLOT" ] && SLOT=_a
++if [ "$ROOT" = "1" ]; then NAME=boot_ksu.img; else NAME=boot_default.img; fi
++IMG=/system_ext/etc/avium/boot/$NAME
++if [ ! -f "$IMG" ]; then echo "root skip: missing $IMG"; else
++    BLK=/dev/block/bootdevice/by-name/boot${SLOT}
++    [ -e "$BLK" ] || BLK=/dev/block/by-name/boot${SLOT}
++    if [ -e "$BLK" ]; then
++        dd if="$IMG" of="$BLK" bs=4096 2>&1
++        sync
++        echo "root flashed $IMG -> $BLK rc=$?"
++    else
++        echo "root skip: no block $BLK"
++    fi
++fi
++echo 'BOOT_PREPARE_DONE'
+diff --git a/prebuilt/common/bin/avium-root-switch.sh b/prebuilt/common/bin/avium-root-switch.sh
+deleted file mode 100644
+index a640e07..0000000
+--- a/prebuilt/common/bin/avium-root-switch.sh
++++ /dev/null
+@@ -1,25 +0,0 @@
+-#!/system/bin/sh
+-# AviumUI root switch: flash selected boot image to current slot boot partition.
+-# Triggered by init on property change of persist.avium.root (1=ksu, 0=default).
+-LOG=/data/system/avium/root-switch.log
+-mkdir -p /data/system/avium 2>/dev/null
+-exec >>"$LOG" 2>&1
+-echo "=== $(date) root-switch triggered ==="
+-VAL=$(getprop persist.avium.root)
+-SLOT=$(getprop ro.boot.slot_suffix)
+-[ -z "$SLOT" ] && SLOT="_a"
+-echo "persist.avium.root=$VAL slot=$SLOT"
+-if [ "$VAL" = "1" ]; then NAME=boot_ksu.img; else NAME=boot_default.img; fi
+-IMG=""
+-for D in /system_ext/etc/avium/boot /data/unencrypted/avium /data/avium; do
+-    if [ -f "$D/$NAME" ]; then IMG="$D/$NAME"; break; fi
+-done
+-[ -n "$IMG" ] || IMG="/data/unencrypted/avium/$NAME"
+-echo "target image: $IMG"
+-if [ ! -f "$IMG" ]; then echo "MISSING $IMG, abort"; exit 1; fi
+-BLK=/dev/block/bootdevice/by-name/boot${SLOT}
+-[ -e "$BLK" ] || BLK=/dev/block/by-name/boot${SLOT}
+-echo "flashing $IMG -> $BLK"
+-dd if="$IMG" of="$BLK" bs=4096 2>&1
+-sync
+-echo "done rc=$?"
+diff --git a/prebuilt/common/bin/avium-volte-switch.sh b/prebuilt/common/bin/avium-volte-switch.sh
+deleted file mode 100755
+index 27bde18..0000000
+--- a/prebuilt/common/bin/avium-volte-switch.sh
++++ /dev/null
+@@ -1,21 +0,0 @@
+-#!/system/bin/sh
+-# AviumUI real VoLTE switch: bind-mount selected MBN set over vendor mcfg_sw.
+-LOG=/data/system/avium/volte-switch.log
+-mkdir -p /data/system/avium 2>/dev/null
+-exec >>"$LOG" 2>&1
+-echo "=== $(date) volte switch ==="
+-VAL=$(getprop persist.avium.volte)
+-[ -z "$VAL" ] && VAL=1
+-TARGET=/vendor/rfs/msm/mpss/readonly/vendor/mbn/mcfg_sw
+-if [ "$VAL" = "1" ]; then SRC=/system_ext/etc/avium/volte/cn/mcfg_sw; else SRC=/system_ext/etc/avium/volte/stock/mcfg_sw; fi
+-echo "persist.avium.volte=$VAL src=$SRC target=$TARGET"
+-if grep -q " $TARGET " /proc/mounts; then
+-    umount "$TARGET"
+-fi
+-mount -o bind "$SRC" "$TARGET"
+-echo "mount rc=$?"
+-for p in persist.dbg.ims_volte_enable persist.dbg.volte_avail_ovr persist.dbg.vt_avail_ovr persist.dbg.wfc_avail_ovr; do
+-    setprop "$p" "$VAL"
+-done
+-rm -f /data/vendor/modem_fdr/fdr_check 2>/dev/null
+-echo 'VOLTE_SWITCH_DONE'
+diff --git a/prebuilt/common/etc/init/init.avium.rc b/prebuilt/common/etc/init/init.avium.rc
+index 963a7f2..1d3fc33 100644
+--- a/prebuilt/common/etc/init/init.avium.rc
++++ b/prebuilt/common/etc/init/init.avium.rc
+@@ -15,28 +15,26 @@ on property:persist.avium.depthwallpaper=0
+     chmod 0777 /data/system/avium/mask
+     chmod 0777 /data/system/avium/wallpaper
+ 
++# AviumUI: apply Root/VoLTE switches very early, before modem reads MBN.
++on early-init
++    start avium-boot-prepare
++
+ on property:persist.avium.root=1
+-    exec - root -- /system/bin/sh /system_ext/bin/avium-root-switch.sh
++    start avium-boot-prepare
+ on property:persist.avium.root=0
+-    exec - root -- /system/bin/sh /system_ext/bin/avium-root-switch.sh
+-
+-on property:avium.root.trigger=*
+-    exec - root -- /system/bin/sh /system_ext/bin/avium-root-switch.sh
+-
+-
+-on post-fs-data
+-    start avium-volte-switch
+-
++    start avium-boot-prepare
+ on property:persist.avium.volte=1
+-    start avium-volte-switch
++    start avium-boot-prepare
+ on property:persist.avium.volte=0
+-    start avium-volte-switch
+-on property:avium.volte.trigger=*
+-    start avium-volte-switch
++    start avium-boot-prepare
++on property:avium.switch.trigger=*
++    start avium-boot-prepare
+ 
+-service avium-volte-switch /system/bin/sh /system_ext/bin/avium-volte-switch.sh
+-    class late_start
++service avium-boot-prepare /system/bin/sh /system_ext/bin/avium-boot-prepare.sh
++    class core
+     user root
+-    group root
++    group root system
+     oneshot
+     disabled
++    seclabel u:r:init:s0
++
+diff --git a/sepolicy/common/private/init.te b/sepolicy/common/private/init.te
+index 16fa041..dc4fefa 100644
+--- a/sepolicy/common/private/init.te
++++ b/sepolicy/common/private/init.te
+@@ -15,3 +15,8 @@ allow init system_file:file { read open getattr };
+ allow init vendor_file:dir { search read open getattr mounton };
+ allow init vendor_file:filesystem { mount unmount remount };
+ allow init shell_exec:file { execute read open getattr };
++allow init vendor_file:lnk_file { read getattr };
++allow init vendor_tmpfs:dir create_dir_perms;
++allow init vendor_tmpfs:file create_file_perms;
++allow init proc_modules:file { read open getattr };
++allow init ksu_file:dir { search read open getattr };
+diff --git a/sepolicy/common/private/property_contexts b/sepolicy/common/private/property_contexts
+index c2b0843..7f69b5a 100644
+--- a/sepolicy/common/private/property_contexts
++++ b/sepolicy/common/private/property_contexts
+@@ -10,3 +10,4 @@ persist.avium.                       u:object_r:system_prop:s0
+ avium.root.trigger               u:object_r:system_prop:s0
+ avium.volte.trigger              u:object_r:system_prop:s0
+ ro.avium.                            u:object_r:system_prop:s0
++avium.switch.trigger              u:object_r:system_prop:s0
+
+From 4b5c0078e5f3585e1b045597fba86ebe817d8c4e Mon Sep 17 00:00:00 2001
+From: builder <b@x>
+Date: Fri, 27 Nov 2026 21:14:33 +0800
+Subject: [PATCH 12/15] avium: fix sepolicy types for boot-prepare service
+
+Change-Id: Ib75276d181fe2ee027a3f2d6183cf008b62c1686
+---
+ prebuilt/common/etc/init/init.avium.rc | 1 -
+ sepolicy/common/private/init.te        | 4 ----
+ 2 files changed, 5 deletions(-)
+
+diff --git a/prebuilt/common/etc/init/init.avium.rc b/prebuilt/common/etc/init/init.avium.rc
+index 1d3fc33..82b6244 100644
+--- a/prebuilt/common/etc/init/init.avium.rc
++++ b/prebuilt/common/etc/init/init.avium.rc
+@@ -36,5 +36,4 @@ service avium-boot-prepare /system/bin/sh /system_ext/bin/avium-boot-prepare.sh
+     group root system
+     oneshot
+     disabled
+-    seclabel u:r:init:s0
+ 
+diff --git a/sepolicy/common/private/init.te b/sepolicy/common/private/init.te
+index dc4fefa..89c8006 100644
+--- a/sepolicy/common/private/init.te
++++ b/sepolicy/common/private/init.te
+@@ -16,7 +16,3 @@ allow init vendor_file:dir { search read open getattr mounton };
+ allow init vendor_file:filesystem { mount unmount remount };
+ allow init shell_exec:file { execute read open getattr };
+ allow init vendor_file:lnk_file { read getattr };
+-allow init vendor_tmpfs:dir create_dir_perms;
+-allow init vendor_tmpfs:file create_file_perms;
+-allow init proc_modules:file { read open getattr };
+-allow init ksu_file:dir { search read open getattr };
+
+From ef748dd34281898ea65596fcf234832b35c82b64 Mon Sep 17 00:00:00 2001
+From: builder <b@x>
+Date: Fri, 27 Nov 2026 21:29:15 +0800
+Subject: [PATCH 13/15] avium: mark SukiSU prebuilt apk as preprocessed for v2
+ signature
+
+Change-Id: I2c467bd1a63cea9c5e64a230fbf367d01838744e
+---
+ prebuilt/common/app/Android.bp | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/prebuilt/common/app/Android.bp b/prebuilt/common/app/Android.bp
+index ec75aaf..f979571 100644
+--- a/prebuilt/common/app/Android.bp
++++ b/prebuilt/common/app/Android.bp
+@@ -2,6 +2,7 @@ android_app_import {
+     name: "SukiSU",
+     apk: "SukiSU/SukiSU.apk",
+     presigned: true,
++    preprocessed: true,
+     dex_preopt: {
+         enabled: false,
+     },
+
+From c0836bc87089ead0d00656aaa23956ff7fe97816 Mon Sep 17 00:00:00 2001
+From: builder <b@x>
+Date: Sat, 28 Nov 2026 08:06:44 +0800
+Subject: [PATCH 14/15] avium: install SukiSU apk via PRODUCT_COPY_FILES to
+ keep original signature
+
+Change-Id: Ie83005f107a3eb72d1d6278c192ef6b622ee064a
+---
+ config/avium.mk                |  6 ++----
+ prebuilt/common/app/Android.bp | 11 -----------
+ 2 files changed, 2 insertions(+), 15 deletions(-)
+ delete mode 100644 prebuilt/common/app/Android.bp
+
+diff --git a/config/avium.mk b/config/avium.mk
+index 22cfba2..98fca2d 100644
+--- a/config/avium.mk
++++ b/config/avium.mk
+@@ -67,8 +67,6 @@ PRODUCT_COPY_FILES += \
+      vendor/avium/prebuilt/common/etc/init/init.avium.rc:$(TARGET_COPY_OUT_SYSTEM_EXT)/etc/init/init.avium.rc \
+      vendor/avium/prebuilt/common/etc/avium/boot/boot_ksu.img:$(TARGET_COPY_OUT_SYSTEM_EXT)/etc/avium/boot/boot_ksu.img \
+      vendor/avium/prebuilt/common/etc/avium/boot/boot_default.img:$(TARGET_COPY_OUT_SYSTEM_EXT)/etc/avium/boot/boot_default.img \
+-     vendor/avium/prebuilt/common/bin/avium-boot-prepare.sh:$(TARGET_COPY_OUT_SYSTEM_EXT)/bin/avium-boot-prepare.sh
++     vendor/avium/prebuilt/common/bin/avium-boot-prepare.sh:$(TARGET_COPY_OUT_SYSTEM_EXT)/bin/avium-boot-prepare.sh \
++     vendor/avium/prebuilt/common/app/SukiSU/SukiSU.apk:$(TARGET_COPY_OUT_SYSTEM_EXT)/app/SukiSU/SukiSU.apk
+ 
+-# AviumUI apps
+-PRODUCT_PACKAGES += \
+-     SukiSU
+diff --git a/prebuilt/common/app/Android.bp b/prebuilt/common/app/Android.bp
+deleted file mode 100644
+index f979571..0000000
+--- a/prebuilt/common/app/Android.bp
++++ /dev/null
+@@ -1,11 +0,0 @@
+-android_app_import {
+-    name: "SukiSU",
+-    apk: "SukiSU/SukiSU.apk",
+-    presigned: true,
+-    preprocessed: true,
+-    dex_preopt: {
+-        enabled: false,
+-    },
+-    privileged: false,
+-    system_ext_specific: true,
+-}
+
+From 1aa6f873f6241ced98838c0d70ed077fc850441c Mon Sep 17 00:00:00 2001
+From: builder <b@x>
+Date: Sat, 28 Nov 2026 14:46:56 +0800
+Subject: [PATCH 15/15] avium: prebuild SukiSU with platform cert
+
+Change-Id: I2920855c362e6d1c98c2c2cb98d6c795b20513ea
+---
+ config/avium.mk                |  6 ++++--
+ prebuilt/common/app/Android.bp | 10 ++++++++++
+ 2 files changed, 14 insertions(+), 2 deletions(-)
+ create mode 100644 prebuilt/common/app/Android.bp
+
+diff --git a/config/avium.mk b/config/avium.mk
+index 98fca2d..22cfba2 100644
+--- a/config/avium.mk
++++ b/config/avium.mk
+@@ -67,6 +67,8 @@ PRODUCT_COPY_FILES += \
+      vendor/avium/prebuilt/common/etc/init/init.avium.rc:$(TARGET_COPY_OUT_SYSTEM_EXT)/etc/init/init.avium.rc \
+      vendor/avium/prebuilt/common/etc/avium/boot/boot_ksu.img:$(TARGET_COPY_OUT_SYSTEM_EXT)/etc/avium/boot/boot_ksu.img \
+      vendor/avium/prebuilt/common/etc/avium/boot/boot_default.img:$(TARGET_COPY_OUT_SYSTEM_EXT)/etc/avium/boot/boot_default.img \
+-     vendor/avium/prebuilt/common/bin/avium-boot-prepare.sh:$(TARGET_COPY_OUT_SYSTEM_EXT)/bin/avium-boot-prepare.sh \
+-     vendor/avium/prebuilt/common/app/SukiSU/SukiSU.apk:$(TARGET_COPY_OUT_SYSTEM_EXT)/app/SukiSU/SukiSU.apk
++     vendor/avium/prebuilt/common/bin/avium-boot-prepare.sh:$(TARGET_COPY_OUT_SYSTEM_EXT)/bin/avium-boot-prepare.sh
+ 
++# AviumUI apps
++PRODUCT_PACKAGES += \
++     SukiSU
+diff --git a/prebuilt/common/app/Android.bp b/prebuilt/common/app/Android.bp
+new file mode 100644
+index 0000000..3d5a90d
+--- /dev/null
++++ b/prebuilt/common/app/Android.bp
+@@ -0,0 +1,10 @@
++android_app_import {
++    name: "SukiSU",
++    apk: "SukiSU/SukiSU.apk",
++    certificate: "platform",
++    dex_preopt: {
++        enabled: false,
++    },
++    privileged: false,
++    system_ext_specific: true,
++}

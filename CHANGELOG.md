@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## v4.0-candidate — 2026-11-28
+第四版候选包已编译成功，等待真机确认后定版。ROM 产物不写入 GitHub 仓库。
+
+- **编译**：\`BUILD END rc=0 @ 2026-11-28 15:03:51\`，产物 AviumUI-16.2.2-flame-20261128_064732-Unofficial-GMS.zip（2.1G）。
+- **SukiSU 管理器内置**：system_ext/app/SukiSU/SukiSU.apk（13.8MB），用 \`android_app_import\` + \`certificate: "platform"\` 预置，开箱即有。
+- **主 boot 干净**：确认 \`# CONFIG_KSU is not set\`，Root 由开关刷入随包 boot_ksu.img。
+- **VoLTE 真开关**：两套 MBN（中国运营商 / Pixel 原版），init 早期服务按开关 bind mount 并在 modem 加载前生效。
+- **开关统一触发**：Root 与 VoLTE 共用 \`avium.switch.trigger\` 属性，避免持久属性值未变导致 init 不触发。
+- **未纳入**：GPhotos 无限空间、LocalSend、MusicFree。
+
+
 ## v3.0-candidate — 2026-11-27
 第三版候选包已编译成功，等待真机确认后定版。ROM 产物不写入 GitHub 仓库。
 

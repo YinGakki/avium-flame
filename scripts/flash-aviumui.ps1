@@ -192,7 +192,8 @@ try {
 if($sideloadRc -ne 0){ Say "sideload 失败，检查数据线/驱动/包。" Red; Pause-AnyKey; exit 1 }
 
 Say "刷入完成! recovery 选 Reboot system now 重启。首次开机较慢(3-10分钟)请耐心等。" Green
-Say "可选 root (PORTING.md 6.4): Magisk patch boot.img 后 fastboot flash boot。" Yellow
+Say "可选 root: 开机后进 设置→系统→绝招→系统，打开 Root 开关并重启即可（两个 boot 已随 ROM 打包）。" Yellow
+Say "首次开机会花十几秒初始化 root 文件，若开关未生效请再重启一次。" DarkGray
 
 Write-Host ''
 Write-Host '========= 脚本结束 =========' -ForegroundColor Cyan
